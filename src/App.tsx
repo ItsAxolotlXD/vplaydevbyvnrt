@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect, useRef, useCallback, ChangeEvent, FormEvent, ReactNode, useMemo } from "react";
 import { 
-  Calendar, Play, Pause, Radio, Info, Sun, Moon, Maximize, Volume2, VolumeX, CheckCircle2, Shield, X, Lock, Terminal, Zap, Clock, History, MousePointer2, Sliders, ChevronLeft, ChevronRight, Layers, Filter, Sparkles, Camera, Palette, Layout, MessageSquare, Eye, EyeOff, ExternalLink, Monitor, Columns, Maximize2, Circle, AlertCircle, RotateCcw, Droplet, Trophy, Film, Music, Globe, Activity, ShieldCheck, LayoutGrid, ArrowRight, ArrowLeft, TrendingUp, Star, Crown, Menu, Pin, Send, Accessibility, Navigation, LayoutTemplate, LayoutPanelLeft, Square, Smartphone, Unlock, Thermometer, Check, Plus, AppWindow, Compass, Trash2, Newspaper, Shuffle, Link, StickyNote, Bold, Italic, Underline, Droplets, Wind, CloudSun, MapPin, CloudRain, Upload, Edit, FileText, Trash, Waves, Tornado,
+  Calendar, Play, Pause, Radio, Info, Sun, Moon, Maximize, Volume2, VolumeX, CheckCircle2, Shield, X, Lock, Terminal, Zap, Clock, History, MousePointer2, Sliders, ChevronLeft, ChevronRight, Layers, Filter, Sparkles, Camera, Palette, Layout, MessageSquare, Eye, EyeOff, ExternalLink, Monitor, Columns, Maximize2, Circle, AlertCircle, RotateCcw, Droplet, Trophy, Film, Music, Globe, Activity, ShieldCheck, LayoutGrid, ArrowRight, ArrowLeft, TrendingUp, Star, Crown, Menu, Pin, Send, Accessibility, Navigation, LayoutTemplate, LayoutPanelLeft, Square, Smartphone, Unlock, Thermometer, Check, Plus, AppWindow, Compass, Trash2, Newspaper, Shuffle, Link, StickyNote, Bold, Italic, Underline, Droplets, Wind, CloudSun, MapPin, CloudRain, Upload, Edit, FileText, Trash, Waves, Tornado, Package,
   Home, Tv, Settings, LogIn, LogOut, Heart, Users, User, Mic, Search, Folder, FolderOpen, Pizza, Cloud, CreditCard, Gift, HelpCircle, FlaskConical as Flask, GlassWater, Grid, ArrowUp, ArrowDown, ArrowRightLeft, Bot, Hash
 } from "lucide-react";
 import Hls from "hls.js";
@@ -78,6 +78,9 @@ const SearchIcon = ({ className, size, strokeWidth }: { className?: string, size
 const FolderIcon = ({ className, size, strokeWidth }: { className?: string, size?: number | string, strokeWidth?: number }) => <FolderOpen className={className} size={size || 22} strokeWidth={strokeWidth || 1.5} />;
 const WavesIcon = ({ className, size, strokeWidth }: { className?: string, size?: number | string, strokeWidth?: number }) => (
   <Waves className={className} size={size || 22} strokeWidth={strokeWidth || 1.8} />
+);
+const PackageIcon = ({ className, size, strokeWidth }: { className?: string, size?: number | string, strokeWidth?: number }) => (
+  <Package className={className} size={size || 22} strokeWidth={strokeWidth || 1.8} />
 );
 const TornadoIcon = ({ className, size, strokeWidth }: { className?: string, size?: number | string, strokeWidth?: number }) => (
   <svg 
@@ -431,7 +434,7 @@ const baseTabs = [
   { name: "Trang chủ", icon: HomeIcon, id: "Trang chủ" },
   { name: "Tìm kiếm", icon: SearchIcon, id: "Tìm kiếm" },
   { name: "Live", icon: TvIcon, id: "Live" },
-  { name: "Realm", icon: TornadoIcon, id: "Realm" },
+  { name: "Package", icon: PackageIcon, id: "Package" },
   { name: "Cài đặt", icon: SettingsIcon, id: "Cài đặt" },
   { name: "Quản trị", icon: AdminIcon, id: "Quản trị" },
 ];
@@ -538,7 +541,6 @@ function ChannelLogo({ src, alt, className, isDark, liquidGlass, status }: { src
         <img 
           src={finalSrc} 
           alt={alt} 
-          style={{ filter: "drop-shadow(1.5px 0px 0px #000) drop-shadow(-1.5px 0px 0px #000) drop-shadow(0px 1.5px 0px #000) drop-shadow(0px -1.5px 0px #000) drop-shadow(1px 1px 0px #000) drop-shadow(-1px -1px 0px #000) drop-shadow(1px -1px 0px #000) drop-shadow(-1px 1px 0px #000)" }}
           referrerPolicy="no-referrer"
           onError={() => setError(true)}
           className={`max-h-[65%] object-contain p-0 transition-opacity duration-300 ${scaleClass} ${status === "maintenance" ? "grayscale opacity-20" : status === "coming-soon" ? "" : ""}`} 
@@ -574,7 +576,6 @@ function ChannelLogo({ src, alt, className, isDark, liquidGlass, status }: { src
       <img 
         src={finalSrc} 
         alt={alt} 
-        style={{ filter: "drop-shadow(1.5px 0px 0px #000) drop-shadow(-1.5px 0px 0px #000) drop-shadow(0px 1.5px 0px #000) drop-shadow(0px -1.5px 0px #000) drop-shadow(1px 1px 0px #000) drop-shadow(-1px -1px 0px #000) drop-shadow(1px -1px 0px #000) drop-shadow(-1px 1px 0px #000)" }}
         referrerPolicy="no-referrer"
         onError={() => setError(true)}
         className={`${className} object-contain p-0 transition-opacity duration-300 ${scaleClass} ${status === "maintenance" ? "grayscale opacity-20" : status === "coming-soon" ? "" : ""}`} 
@@ -637,29 +638,14 @@ function ChannelCard({ ch, onClick, isDark, isActive, favorites, toggleFavorite,
       <motion.button
         whileTap={{ scale: 0.98 }}
         onClick={onClick}
-        className={`w-full ${isLiveTab ? "aspect-[1.5/1]" : "aspect-square"} p-2.5 xs:p-3 sm:p-5 flex items-center justify-center relative overflow-hidden transition-none z-10 rounded-2xl border-[3px] hover:border-white hover:z-20 ${
+        className={`w-full ${isLiveTab ? "aspect-[1.5/1]" : "aspect-square"} p-2.5 xs:p-3 sm:p-5 flex items-center justify-center relative overflow-hidden transition-none z-10 rounded-2xl border-[3px] ${
           isActive
             ? "border-[#4AC4FE] shadow-lg shadow-[#4AC4FE]/40 scale-[1.03]"
             : isDark
-              ? "border-white/5 hover:brightness-125"
-              : "border-[#e2e8f0] hover:brightness-105"
+              ? "border-white/5 bg-[#202023] hover:brightness-110"
+              : "border-[#e2e8f0] bg-white hover:brightness-105"
         }`}
       >
-        {/* Background Channel Image Layer */}
-        <div 
-          style={{ 
-            backgroundImage: 'url("https://static.wikia.nocookie.net/ftv/images/3/3a/Bg.png/revision/latest/scale-to-width-down/1000?cb=20260604052754&path-prefix=vi")',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat'
-          }}
-          className="absolute inset-0 z-0 transition-opacity duration-300 group-hover:opacity-0"
-        />
-
-        {/* Hover Solid Dark Gray Layer - Transition to dark gray when hovered */}
-        <div 
-          className="absolute inset-0 z-0 bg-[#202023] opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-        />
 
         {isMaintenance && (
           <div className="absolute top-2 left-2 bg-amber-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-md z-20 shadow-md">
@@ -1484,8 +1470,8 @@ function ExploreContent({
   handleSearchContextMenu: (e: React.MouseEvent) => void,
   searchFilter: "all" | "channels" | "settings" | "experiments",
   allCustomChannels?: Channel[],
-  searchFilterOption?: "Tất cả kênh" | "Kênh của Vplay" | "Realm của bạn",
-  setSearchFilterOption?: (val: "Tất cả kênh" | "Kênh của Vplay" | "Realm của bạn") => void
+  searchFilterOption?: "Tất cả kênh" | "Kênh của Vplay" | "Package của bạn",
+  setSearchFilterOption?: (val: "Tất cả kênh" | "Kênh của Vplay" | "Package của bạn") => void
 }) {
   return (
     <div className="flex-1 flex flex-col pt-8 overflow-y-auto scrollbar-hide pb-32">
@@ -1735,7 +1721,7 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
     }
     return Array.from({ length: 5 }).map((_, idx) => ({
       id: `list-${idx + 1}`,
-      name: `Realm của bạn ${idx + 1}`,
+      name: `Package của bạn ${idx + 1}`,
       content: "",
       channels: []
     }));
@@ -1747,7 +1733,7 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
         const next = [...prev];
         next[0] = {
           id: `list-1`,
-          name: `Realm của bạn 1`,
+          name: `Package của bạn 1`,
           content: "",
           channels: []
         };
@@ -1755,7 +1741,7 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
         return next;
       });
       setCustomPage(0);
-      showToast("Đã xóa sạch Realm cuối cùng và đặt lại mặc định", "info");
+      showToast("Đã xóa sạch Package cuối cùng và đặt lại mặc định", "info");
       return;
     }
 
@@ -1770,7 +1756,7 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
       setActivePlaylistIdx(Math.max(0, activePlaylistIdx - 1));
     }
     setCustomPage(0);
-    showToast(`Đã xóa Realm "${playlistName}" thành công!`, "success");
+    showToast(`Đã xóa Package "${playlistName}" thành công!`, "success");
   };
 
   const [activePlaylistIdx, setActivePlaylistIdx] = useState<number>(0);
@@ -2556,7 +2542,7 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
                 onDoubleClick={toggleFullscreen}
               >
                 <img
-                  src={active.name.includes("VTV6") ? "https://scontent.fhan5-10.fna.fbcdn.net/v/t39.30808-6/712228042_1296638536006869_5892455064908961142_n.jpg?stp=cp6_dst-jpg_tt6&_nc_cat=111&ccb=1-7&_nc_sid=127cfc&_nc_ohc=pKpiIlEEfaIQ7kNvwHc7t" : (active.status === "maintenance" ? "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/EBU_Colorbars_HD.svg/960px-EBU_Colorbars_HD.svg.png?_=20220810032923" : active.stream)}
+                  src={active.name.includes("VTV6") ? "https://static.wikia.nocookie.net/ftv/images/b/b6/666.png/revision/latest/scale-to-width-down/1000?cb=20260604070054&path-prefix=vi" : (active.status === "maintenance" ? "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/EBU_Colorbars_HD.svg/960px-EBU_Colorbars_HD.svg.png?_=20220810032923" : active.stream)}
                   alt={active.name}
                   className="w-full h-full object-contain select-none"
                   referrerPolicy="no-referrer"
@@ -3095,7 +3081,7 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
         <div className="mt-8 flex justify-center w-full px-2 max-w-4xl mx-auto border-b border-white/10">
           <div className="flex gap-8 justify-center">
             {[
-              { id: "custom", label: "Realm của bạn", icon: FolderOpen },
+              { id: "custom", label: "Package của bạn", icon: FolderOpen },
               { id: "url", label: "Link luồng / URL", icon: Link }
             ].map((tab) => {
               const Icon = tab.icon;
@@ -3203,7 +3189,7 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
             <div className="flex items-center justify-between mb-4 border-b border-white/5 pb-3">
               <h3 className="text-lg font-black tracking-tighter uppercase flex items-center gap-2 text-[#4AC4FE]">
                 <Edit size={18} />
-                Cài đặt Realm & dán Code M3U/M3U8
+                Cài đặt Package & dán Code M3U/M3U8
               </h3>
               <button onClick={() => setEditingPlaylistIdx(null)} className="p-1.5 rounded-xl hover:bg-white/5 text-slate-400 hover:text-white">
                 <X size={18} />
@@ -3212,13 +3198,13 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
 
             <div className="space-y-4 overflow-y-auto pr-1 flex-1">
               <div>
-                <label className="text-xs font-black uppercase tracking-wider opacity-60 mb-1.5 block">Tên Realm của bạn</label>
+                <label className="text-xs font-black uppercase tracking-wider opacity-60 mb-1.5 block">Tên Package của bạn</label>
                 <input
                   type="text"
                   value={tempPlaylistName}
                   onChange={(e) => setTempPlaylistName(e.target.value)}
                   className={`w-full px-3 py-2.5 rounded-xl text-xs font-bold border ${isDark ? "bg-white/5 border-white/10 text-white" : "bg-slate-100 border-slate-200 text-slate-850"}`}
-                  placeholder="Realm của bạn"
+                  placeholder="Package của bạn"
                 />
               </div>
 
@@ -4081,13 +4067,13 @@ function SearchPopup({
   handleOpenSettings: () => void,
   onContextMenu?: (e: React.MouseEvent) => void,
   allCustomChannels?: typeof channels,
-  searchFilterOption?: "Tất cả kênh" | "Kênh của Vplay" | "Realm của bạn"
+  searchFilterOption?: "Tất cả kênh" | "Kênh của Vplay" | "Package của bạn"
 }) {
   if (searchQuery.trim() === "" && !asContent) return null;
 
   const sourceChannels = searchFilterOption === "Kênh của Vplay"
     ? channels
-    : searchFilterOption === "Realm của bạn"
+    : searchFilterOption === "Package của bạn"
     ? (allCustomChannels || [])
     : [...channels, ...(allCustomChannels || [])];
 
@@ -7248,8 +7234,8 @@ function SearchBar({ isDark, query, setQuery, onClose, liquidGlass, onContextMen
   onClose: () => void, 
   liquidGlass: "glassy" | "tinted", 
   onContextMenu?: (e: React.MouseEvent) => void,
-  searchFilterOption?: "Tất cả kênh" | "Kênh của Vplay" | "Realm của bạn",
-  setSearchFilterOption?: (val: "Tất cả kênh" | "Kênh của Vplay" | "Realm của bạn") => void 
+  searchFilterOption?: "Tất cả kênh" | "Kênh của Vplay" | "Package của bạn",
+  setSearchFilterOption?: (val: "Tất cả kênh" | "Kênh của Vplay" | "Package của bạn") => void 
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isListening, setIsListening] = useState(false);
@@ -7320,7 +7306,7 @@ function SearchBar({ isDark, query, setQuery, onClose, liquidGlass, onContextMen
           >
             <option value="Tất cả kênh" className={isDark ? "bg-[#181924] text-white" : "bg-white text-black"}>Tất cả kênh</option>
             <option value="Kênh của Vplay" className={isDark ? "bg-[#181924] text-white" : "bg-white text-black"}>Kênh của Vplay</option>
-            <option value="Realm của bạn" className={isDark ? "bg-[#181924] text-white" : "bg-white text-black"}>Realm của bạn</option>
+            <option value="Package của bạn" className={isDark ? "bg-[#181924] text-white" : "bg-white text-black"}>Package của bạn</option>
           </select>
         )}
       </div>
@@ -10822,10 +10808,10 @@ const [sidebarWidth, setSidebarWidth] = useState(() => {
   const slides = useMemo(() => [
     { 
       url: "https://images.unsplash.com/photo-1593789198777-f29bc259780e?q=80&w=1200&auto=format&fit=crop", 
-      title: "Ra mắt tính năng My Realm", 
-      desc: "Nơi bạn có thể xem các kênh truyền hình bằng file m3u/m3u8 hoặc bằng luồng URL cực thuận tiện. Trải nghiệm ngay My Realm!",
+      title: "Ra mắt tính năng My Package", 
+      desc: "Nơi bạn có thể xem các kênh truyền hình bằng file m3u/m3u8 hoặc bằng luồng URL cực thuận tiện. Trải nghiệm ngay My Package!",
       tag: "Feature Link",
-      action: () => setActiveTab("Realm")
+      action: () => setActiveTab("Package")
     },
     { 
       url: "https://img.cand.com.vn/resize/800x800/NewFiles/Images/2023/03/30/Giai_tri_vtv-1680172145227.jpg", 
@@ -10840,7 +10826,7 @@ const [sidebarWidth, setSidebarWidth] = useState(() => {
       tag: "Thiết kế"
     },
     { 
-      url: "https://scontent.fhan5-10.fna.fbcdn.net/v/t39.30808-6/712228042_1296638536006869_5892455064908961142_n.jpg?stp=cp6_dst-jpg_tt6&_nc_cat=111&ccb=1-7&_nc_sid=127cfc&_nc_ohc=pKpiIlEEfaIQ7kNvwHc7t", 
+      url: "https://static.wikia.nocookie.net/ftv/images/b/b6/666.png/revision/latest/scale-to-width-down/1000?cb=20260604070054&path-prefix=vi", 
       title: "Chào đón VTV6 trở lại cùng Vplay!",
       desc: "Kênh truyền hình Thể thao chuyên biệt sắp sửa quay trở lại. Hãy sẵn sàng trải nghiệm các trận đấu kịch tính và đầy cảm xúc trực tiếp cùng Vplay!",
       tag: "VTV6",
@@ -11191,7 +11177,7 @@ const [headingBar, setHeadingBar] = useState(() => {
   ]);
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchFilterOption, setSearchFilterOption] = useState<"Tất cả kênh" | "Kênh của Vplay" | "Realm của bạn">("Tất cả kênh");
+  const [searchFilterOption, setSearchFilterOption] = useState<"Tất cả kênh" | "Kênh của Vplay" | "Package của bạn">("Tất cả kênh");
 
   const allCustomChannels = useMemo(() => {
     const saved = localStorage.getItem("vplay_custom_playlists_v2");
@@ -12258,7 +12244,7 @@ const [headingBar, setHeadingBar] = useState(() => {
                     >
                       <option value="Tất cả kênh" className={isDark ? "bg-[#181924] text-white" : "bg-white text-black"}>Tất cả kênh</option>
                       <option value="Kênh của Vplay" className={isDark ? "bg-[#181924] text-white" : "bg-white text-black"}>Kênh của Vplay</option>
-                      <option value="Realm của bạn" className={isDark ? "bg-[#181924] text-white" : "bg-white text-black"}>Realm của bạn</option>
+                      <option value="Package của bạn" className={isDark ? "bg-[#181924] text-white" : "bg-white text-black"}>Package của bạn</option>
                     </select>
                     {searchQuery && (
                       <button onClick={() => setSearchQuery("")} className="p-1 rounded-full hover:bg-black/10">
@@ -12454,7 +12440,7 @@ const [headingBar, setHeadingBar] = useState(() => {
                   togglePinChannel={togglePinChannel}
                 />
               )}
-              {displayTab === "Realm" && (
+              {displayTab === "Package" && (
                 <TVContent 
                   mode="realm"
                   active={activeChannel} 
@@ -12760,12 +12746,14 @@ const [headingBar, setHeadingBar] = useState(() => {
                     return (
                       <div key={`side-nav-${tab.id || tab.name}-${idx}`} className="px-1.5 py-1 relative">
                         <div className={`relative flex items-center gap-2.5 px-3.5 py-1.5 h-10 w-full group rounded-2xl overflow-hidden transition-all ${
-                          isDark 
-                            ? "bg-slate-800/60 text-white" 
-                            : "bg-slate-200 text-slate-900"
+                          liquidGlass === "glassy"
+                            ? "bg-white/10 text-white" 
+                            : isDark 
+                              ? "bg-slate-800/60 text-white" 
+                              : "bg-slate-200 text-slate-900"
                         }`}>
                           <Icon size={16} className={`shrink-0 transition-colors ${
-                            isSearchFocused ? "text-[#4AC4FE]" : "text-slate-400"
+                            isSearchFocused ? "text-[#4AC4FE]" : (liquidGlass === "glassy" ? "text-white/60" : "text-slate-400")
                           }`} />
                           <input
                             type="text"
@@ -12774,12 +12762,12 @@ const [headingBar, setHeadingBar] = useState(() => {
                             onFocus={() => setIsSearchFocused(true)}
                             onBlur={() => setTimeout(() => setIsSearchFocused(false), 250)}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className={`bg-transparent border-none outline-none text-xs w-full font-bold placeholder-slate-500 font-google ${
-                              isDark ? "text-white" : "text-slate-900"
+                            className={`bg-transparent border-none outline-none text-xs w-full font-bold font-google ${
+                              liquidGlass === "glassy" ? "text-white placeholder-white/40" : isDark ? "text-white placeholder-slate-500" : "text-slate-900 placeholder-black/40"
                             }`}
                           />
                           <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-[90%] transition-all duration-300 ${
-                            isDark ? "bg-white/5" : "bg-black/5"
+                            liquidGlass === "glassy" ? "bg-white/20" : isDark ? "bg-white/5" : "bg-black/5"
                           } ${isSearchFocused ? "bg-[#4AC4FE]" : ""}`} />
                         </div>
 
@@ -13171,7 +13159,7 @@ const [headingBar, setHeadingBar] = useState(() => {
                 >
                   {navPage === 0 && (
                     <>
-                      {baseTabs.filter(t => ["Trang chủ", "Live", "Realm", "Cài đặt"].includes(t.id || t.name)).map((tab) => {
+                      {baseTabs.filter(t => ["Trang chủ", "Live", "Package", "Cài đặt"].includes(t.id || t.name)).map((tab) => {
                         const Icon = tab.icon;
                         const tabId = tab.id || tab.name;
                         const isActive = activeTab === tabId;
@@ -13272,12 +13260,14 @@ const [headingBar, setHeadingBar] = useState(() => {
 
                       <div className="flex-1 flex items-center justify-center">
                         <div className={`relative flex items-center gap-2.5 px-3.5 py-1.5 h-10 w-full group rounded-2xl overflow-hidden transition-all ${
-                          isDark 
-                            ? "bg-slate-800/60 text-white" 
-                            : "bg-slate-200 text-slate-900"
+                          liquidGlass === "glassy"
+                            ? "bg-white/10 text-white" 
+                            : isDark 
+                              ? "bg-slate-800/60 text-white" 
+                              : "bg-slate-200 text-slate-900"
                         }`}>
                           <SearchIcon size={14} className={`shrink-0 transition-colors ${
-                            isSearchFocused ? "text-[#4AC4FE]" : "text-slate-400"
+                            isSearchFocused ? "text-[#4AC4FE]" : (liquidGlass === "glassy" ? "text-white/60" : "text-slate-400")
                           }`} />
                           <input
                             type="text"
@@ -13286,12 +13276,12 @@ const [headingBar, setHeadingBar] = useState(() => {
                             onFocus={() => setIsSearchFocused(true)}
                             onBlur={() => setTimeout(() => setIsSearchFocused(false), 250)}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className={`bg-transparent border-none outline-none text-xs w-full font-bold placeholder-slate-500 font-google ${
-                              isDark ? "text-white" : "text-slate-900"
+                            className={`bg-transparent border-none outline-none text-xs w-full font-bold font-google ${
+                              liquidGlass === "glassy" ? "text-white placeholder-white/40" : isDark ? "text-white placeholder-slate-500" : "text-slate-900 placeholder-black/40"
                             }`}
                           />
                           <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-[90%] transition-all duration-300 ${
-                            isDark ? "bg-white/5" : "bg-black/5"
+                            liquidGlass === "glassy" ? "bg-white/20" : isDark ? "bg-white/5" : "bg-black/5"
                           } ${isSearchFocused ? "bg-[#4AC4FE]" : ""}`} />
                         </div>
                       </div>
