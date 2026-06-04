@@ -355,7 +355,7 @@ const SplashScreen = ({
         {isReinstalling ? (
           <div className="flex flex-col items-center gap-6 text-center">
             <div className="flex flex-col items-center gap-3">
-              <div className="w-18 h-18 sm:w-20 sm:h-20">
+              <div className="w-12 h-12 sm:w-14 sm:h-14">
                 <svg 
                   className="animate-spin w-full h-full" 
                   viewBox="0 0 24 24" 
@@ -377,7 +377,7 @@ const SplashScreen = ({
                   Vplay is erasing - This might take several minutes
                 </span>
                 <p className="text-white/80 text-sm md:text-base tracking-wide whitespace-nowrap font-normal" style={{ fontFamily: "Montserrat, sans-serif" }}>
-                  Re-installing <span className="text-[#4AC4FE] font-bold">{currentFile}</span> - <span className="text-emerald-400 font-extrabold">{progress}%</span> complete
+                  Re-installing <span className="text-[#4AC4FE] font-normal">{currentFile}</span> - <span className="text-emerald-400 font-normal">{progress}%</span> complete
                 </p>
               </div>
             </div>
@@ -385,7 +385,7 @@ const SplashScreen = ({
         ) : (
           <div className="flex flex-col items-center gap-6 text-center">
             <div className="flex flex-col items-center gap-3">
-              <div className="w-18 h-18 sm:w-20 sm:h-20">
+              <div className="w-12 h-12 sm:w-14 sm:h-14">
                 <svg 
                   className="animate-spin w-full h-full" 
                   viewBox="0 0 24 24" 
@@ -402,8 +402,8 @@ const SplashScreen = ({
                   />
                 </svg>
               </div>
-              <span className="text-white text-base sm:text-lg md:text-xl font-bold tracking-wide mt-3 select-none flex items-center justify-center gap-1.5">
-                Sản phẩm của <span className="bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-amber-500 font-black">VNRT</span>
+              <span className="text-white text-base sm:text-lg md:text-xl font-normal tracking-wide mt-3 select-none flex items-center justify-center gap-1.5">
+                Sản phẩm của <span className="text-white font-normal">VNRT</span>
               </span>
             </div>
           </div>
@@ -599,7 +599,7 @@ function ChannelLogo({ src, alt, className, isDark, liquidGlass, status }: { src
   );
 }
 
-function ChannelCard({ ch, onClick, isDark, isActive, favorites, toggleFavorite, liquidGlass, className, isLiveTab, onContextMenu }: {
+const ChannelCard = React.memo(function ChannelCard({ ch, onClick, isDark, isActive, favorites, toggleFavorite, liquidGlass, className, isLiveTab, onContextMenu }: {
   ch: Channel,
   onClick: () => void,
   isDark: boolean,
@@ -638,12 +638,12 @@ function ChannelCard({ ch, onClick, isDark, isActive, favorites, toggleFavorite,
       <motion.button
         whileTap={{ scale: 0.98 }}
         onClick={onClick}
-        className={`w-full ${isLiveTab ? "aspect-[1.5/1]" : "aspect-square"} p-2.5 xs:p-3 sm:p-5 flex items-center justify-center relative overflow-hidden transition-none z-10 rounded-2xl border-[3px] ${
+        className={`w-full ${isLiveTab ? "aspect-[1.5/1]" : "aspect-square"} p-2.5 xs:p-3 sm:p-5 flex items-center justify-center relative overflow-hidden transition-colors duration-200 z-10 rounded-2xl border-[3px] ${
           isActive
             ? "border-[#4AC4FE] shadow-lg shadow-[#4AC4FE]/40 scale-[1.03]"
             : isDark
-              ? "border-white/5 bg-[#202023] hover:brightness-110"
-              : "border-[#e2e8f0] bg-white hover:brightness-105"
+              ? "border-white/5 bg-[#202023] hover:brightness-110 group-hover:border-white"
+              : "border-[#e2e8f0] bg-white hover:brightness-105 group-hover:border-white"
         }`}
       >
 
@@ -674,13 +674,13 @@ function ChannelCard({ ch, onClick, isDark, isActive, favorites, toggleFavorite,
           <div className="relative w-full h-full flex items-center justify-center transition-transform duration-300 ease-out group-hover:scale-120">
             {/* Main Centered Logo */}
             <ChannelLogo 
-              src={ch.logo} 
-              alt={ch.name} 
-              className="w-full h-full object-contain"
-              isDark={isDark} 
-              liquidGlass={liquidGlass} 
-              status={ch.status} 
-            />
+               src={ch.logo} 
+               alt={ch.name} 
+               className="w-full h-full object-contain"
+               isDark={isDark} 
+               liquidGlass={liquidGlass} 
+               status={ch.status} 
+             />
           </div>
         </div>
       </motion.button>
@@ -699,7 +699,7 @@ function ChannelCard({ ch, onClick, isDark, isActive, favorites, toggleFavorite,
       </button>
     </div>
   );
-}
+});
 
 
 const AnimatedTimeBox = ({ value, label, isDark, textClassName }: { value: number, label: string, isDark: boolean, textClassName?: string }) => {
@@ -851,6 +851,23 @@ function HomeContent({
 
   const [startIndex, setStartIndex] = useState(0);
 
+  const slideTouchStartXRef = useRef<number | null>(null);
+  const handleSlideTouchStart = (e: React.TouchEvent) => {
+    slideTouchStartXRef.current = e.touches[0].clientX;
+  };
+  const handleSlideTouchEnd = (e: React.TouchEvent) => {
+    if (slideTouchStartXRef.current === null) return;
+    const diff = e.changedTouches[0].clientX - slideTouchStartXRef.current;
+    slideTouchStartXRef.current = null;
+    if (Math.abs(diff) > 40) {
+      if (diff > 0) {
+        paginate(-1); // swipe right -> previous slide
+      } else {
+        paginate(1);  // swipe left -> next slide
+      }
+    }
+  };
+
   const getItemWidthAndGap = () => {
     if (typeof window !== "undefined") {
       if (window.innerWidth < 380) return { width: 110, gap: 12 };
@@ -942,7 +959,11 @@ function HomeContent({
   return (
     <div className="relative space-y-16 pb-32 w-full max-w-[1600px] 2xl:max-w-[1800px] mx-auto px-4 md:px-12">
       {/* Dynamic Hero Section */}
-      <div className="relative w-full overflow-visible py-4 select-none">
+      <div 
+        onTouchStart={handleSlideTouchStart}
+        onTouchEnd={handleSlideTouchEnd}
+        className="relative w-full overflow-visible py-4 select-none"
+      >
         {/* Carousel 3D Track */}
         <div className="relative w-full max-w-6xl mx-auto aspect-[16/9] md:aspect-[2.2/1] overflow-visible">
           {/* Left card (Previous slide) */}
@@ -1034,7 +1055,7 @@ function HomeContent({
               </AnimatePresence>
 
               {/* Gradient Overlay for description text */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent flex flex-col justify-end p-5 md:p-10 z-25 font-sans pointer-events-none">
+              <div className="hidden md:flex absolute inset-0 bg-gradient-to-t from-black/95 via-black/30 to-transparent flex-col justify-end p-5 md:p-10 z-25 font-sans pointer-events-none">
                 <motion.div
                   initial={{ opacity: 0, y: 25 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -1102,6 +1123,37 @@ function HomeContent({
         </div>
       </div>
 
+      {/* Mobile Slide Info (shown outside the thumbnail image/box) */}
+      <div className="block md:hidden px-2 -mt-4 mb-2">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={`mob-text-${slideIndex}`}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-1.5"
+          >
+            <div className="flex items-center gap-1.5">
+              <span className="px-2.5 py-0.5 rounded-full bg-[#4AC4FE]/10 text-[#4AC4FE] border border-[#4AC4FE]/20 text-[9px] font-black uppercase tracking-wider">
+                {slides[slideIndex]?.tag}
+              </span>
+              {slides[slideIndex]?.channel && (
+                <span className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-500/10 text-red-500 border border-red-500/20 text-[9px] font-black uppercase tracking-wider animate-pulse">
+                  <Play size={8} fill="currentColor" /> QUA TRỰC TIẾP
+                </span>
+              )}
+            </div>
+            <h3 className={`text-base font-black uppercase tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>
+              {slides[slideIndex]?.title}
+            </h3>
+            <p className={`text-xs font-semibold leading-relaxed ${isDark ? "text-slate-400" : "text-slate-600"} line-clamp-3`}>
+              {slides[slideIndex]?.desc}
+            </p>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
       {/* VTV6 Return Countdown Banner */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
@@ -1112,7 +1164,7 @@ function HomeContent({
       >
         <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 md:gap-6 flex-1 text-center sm:text-left">
           {/* Magnified VTV6 Logo */}
-          <div className="relative shrink-0 flex items-center justify-center p-4 rounded-2xl bg-gradient-to-br from-[#E11D48] via-[#F43F5E] to-[#BE123C] shadow-lg shadow-black/40 border border-white/20 select-none">
+          <div className="relative shrink-0 flex items-center justify-center select-none">
             <img 
               src="https://static.wikia.nocookie.net/logos/images/2/21/VTV6_logo_%282026%29.png/revision/latest/scale-to-width-down/1000?cb=20260508074729&path-prefix=vi"
               alt="VTV6 Logo"
@@ -1122,7 +1174,7 @@ function HomeContent({
           </div>
           
           <div className="space-y-2 md:space-y-3 flex-1">
-            <h2 className="text-lg md:text-2xl font-black tracking-tight leading-tight bg-gradient-to-r from-rose-400 via-pink-400 to-red-500 bg-clip-text text-transparent">
+            <h2 className="text-lg md:text-2xl font-black tracking-tight leading-tight bg-gradient-to-r from-blue-400 via-[#4AC4FE] to-[#a855f7] bg-clip-text text-transparent">
               VTV6 - Kênh Truyền hình Thể thao chính thức trở lại!
             </h2>
             <p className={`text-xs md:text-[13px] font-medium leading-relaxed ${isDark ? "text-slate-400" : "text-slate-600"}`}>
@@ -1245,17 +1297,17 @@ function HomeContent({
             </div>
           </div>
 
-          {/* On Mobile/Tablet Screens: Perfectly responsive, wrapping grid (no awkward cropping / hidden items) */}
+          {/* On Mobile/Tablet Screens: Perfectly responsive, horizontally scrollable rail with snap support */}
           <div className="block md:hidden">
-            <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 gap-4 px-1 pb-4">
-              {randomChannels.slice(0, 8).map((ch, idx) => (
+            <div className="flex overflow-x-auto gap-4 px-1 pb-6 scrollbar-hide snap-x touch-pan-x">
+              {randomChannels.map((ch, idx) => (
                 <motion.div 
-                  key={`home-grid-suggested-${ch.name}-${idx}`} 
+                  key={`home-mobile-suggested-${ch.name}-${idx}`} 
                   initial={{ opacity: 0, x: 30 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
                   transition={{ type: "spring", stiffness: 100, damping: 15, delay: idx * 0.05 }}
-                  className="group relative"
+                  className="shrink-0 w-[140px] xs:w-[155px] snap-center group relative"
                 >
                   <ChannelCard 
                     ch={ch} 
@@ -1941,30 +1993,32 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
     }
   }, [liveSubTab, customPlaylists, activePlaylistIdx]);
 
-  const filteredChannels = displayChannelsList
-    .filter(ch => {
-      const matchesSearch = ch.name.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesType = filterType === "Tất cả" 
-        || (filterType === "Hoạt động" && ch.status !== "maintenance")
-        || (filterType === "Bảo trì" && ch.status === "maintenance")
-        || (filterType === "Thiết yếu" && (ch.name === "VTV1" || ch.name === "VTV5" || ch.name === "Vietnam Today" || ch.name.includes("ANTV") || ch.name.includes("QPVN")))
-        || (filterType === "VTV" && ["VTV1", "VTV2", "VTV3", "VTV4", "VTV5", "VTV6", "VTV7", "VTV8", "VTV9", "VTV Cần Thơ", "Vietnam Today"].includes(ch.name))
-        || (filterType === "VTVcab" && ch.name.includes("ON"))
-        || (filterType === "HTV" && ch.name.startsWith("HTV"))
-        || (filterType === "Các kênh địa phương" && (
-             !(ch.name === "VTV1" || ch.name === "VTV5" || ch.name === "Vietnam Today" || ch.name.includes("ANTV") || ch.name.includes("QPVN")) &&
-             !["VTV2", "VTV3", "VTV4", "VTV6", "VTV7", "VTV8", "VTV9", "VTV Cần Thơ"].includes(ch.name) &&
-             !ch.name.includes("ON") &&
-             !ch.name.startsWith("HTV")
-           ))
-        || ch.category === filterType;
-      return matchesSearch && matchesType;
-    })
-    .sort((a, b) => {
-      if (sortOrder === "default") return 0;
-      if (sortOrder === "az") return a.name.localeCompare(b.name);
-      return b.name.localeCompare(a.name);
-    });
+  const filteredChannels = useMemo(() => {
+    return displayChannelsList
+      .filter(ch => {
+        const matchesSearch = ch.name.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesType = filterType === "Tất cả" 
+          || (filterType === "Hoạt động" && ch.status !== "maintenance")
+          || (filterType === "Bảo trì" && ch.status === "maintenance")
+          || (filterType === "Thiết yếu" && (ch.name === "VTV1" || ch.name === "VTV5" || ch.name === "Vietnam Today" || ch.name.includes("ANTV") || ch.name.includes("QPVN")))
+          || (filterType === "VTV" && ["VTV1", "VTV2", "VTV3", "VTV4", "VTV5", "VTV6", "VTV7", "VTV8", "VTV9", "VTV Cần Thơ", "Vietnam Today"].includes(ch.name))
+          || (filterType === "VTVcab" && ch.name.includes("ON"))
+          || (filterType === "HTV" && ch.name.startsWith("HTV"))
+          || (filterType === "Các kênh địa phương" && (
+               !(ch.name === "VTV1" || ch.name === "VTV5" || ch.name === "Vietnam Today" || ch.name.includes("ANTV") || ch.name.includes("QPVN")) &&
+               !["VTV2", "VTV3", "VTV4", "VTV6", "VTV7", "VTV8", "VTV9", "VTV Cần Thơ"].includes(ch.name) &&
+               !ch.name.includes("ON") &&
+               !ch.name.startsWith("HTV")
+             ))
+          || ch.category === filterType;
+        return matchesSearch && matchesType;
+      })
+      .sort((a, b) => {
+        if (sortOrder === "default") return 0;
+        if (sortOrder === "az") return a.name.localeCompare(b.name);
+        return b.name.localeCompare(a.name);
+      });
+  }, [displayChannelsList, searchQuery, filterType, sortOrder]);
 
   const LIVE_CATEGORIES = ["Thiết yếu", "VTV", "VTVcab", "HTV", "Các kênh địa phương"];
   const filteredCategories = useMemo(() => {
@@ -2007,7 +2061,7 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
 
   // Play 1000Hz testcard tone beep for testcard/maintenance channels
   useEffect(() => {
-    const isTestcard = active.status === "maintenance" || active.stream.includes("Colorbars");
+    const isTestcard = active.status === "maintenance" || active.stream.includes("Colorbars") || active.name.includes("VTV6");
     
     if (!isTestcard || isMuted || volume === 0 || showSplash) {
       if (beepOscillatorRef.current) {
@@ -2542,7 +2596,7 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
                 onDoubleClick={toggleFullscreen}
               >
                 <img
-                  src={active.name.includes("VTV6") ? "https://static.wikia.nocookie.net/ftv/images/b/b6/666.png/revision/latest/scale-to-width-down/1000?cb=20260604070054&path-prefix=vi" : (active.status === "maintenance" ? "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/EBU_Colorbars_HD.svg/960px-EBU_Colorbars_HD.svg.png?_=20220810032923" : active.stream)}
+                  src={(active.name.includes("VTV6") || active.status === "maintenance" || active.stream.includes("Colorbars")) ? "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/EBU_Colorbars_HD.svg/960px-EBU_Colorbars_HD.svg.png?_=20220810032923" : active.stream}
                   alt={active.name}
                   className="w-full h-full object-contain select-none"
                   referrerPolicy="no-referrer"
@@ -5848,11 +5902,11 @@ function RejuvenatedSettings(props: any) {
   }
 
   return (
-    <div className={`flex flex-col lg:flex-row h-full overflow-hidden ${frostedGlassWidgets ? "bg-transparent text-white" : (isDark ? "bg-vplay-background" : "bg-white")}`}>
-      <div className={`w-full lg:w-[320px] shrink-0 p-4 lg:p-6 flex flex-col gap-4 lg:gap-10 border-b lg:border-b-0 lg:border-r z-10 ${
+    <div className={`flex flex-col h-full overflow-hidden ${frostedGlassWidgets ? "bg-transparent text-white" : (isDark ? "bg-vplay-background" : "bg-white")}`}>
+      <div className={`w-full shrink-0 p-4 lg:p-6 flex flex-col gap-4 border-b z-10 ${
         frostedGlassWidgets 
           ? "bg-transparent border-white/10" 
-          : (isDark ? "bg-black/20 border-black/5" : "bg-slate-50/10 border-black/5")
+          : (isDark ? "bg-black/20 border-white/5" : "bg-slate-50/10 border-slate-200")
       }`}>
         <div className="space-y-4">
           <div className="relative group">
@@ -5873,29 +5927,23 @@ function RejuvenatedSettings(props: any) {
           </div>
         </div>
 
-        <div className="flex-1 lg:overflow-y-auto overflow-x-auto flex flex-row lg:flex-col gap-2 space-y-0 lg:space-y-1 py-1 px-1 custom-scrollbar scrollbar-hide">
+        <div className="overflow-x-auto flex flex-row gap-2 py-1 px-1 custom-scrollbar scrollbar-hide">
           {categories.map((cat) => (
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              className={`shrink-0 w-auto lg:w-full flex items-center gap-3 lg:gap-5 px-4 lg:px-5 py-2.5 lg:py-4 rounded-[16px] lg:rounded-[22px] transition-all relative group ${
+              className={`shrink-0 flex items-center gap-2 px-3 lg:px-4 py-2.5 transition-all relative group border-b-[3px] -mb-[12px] h-12 ${
                 activeCategory === cat.id 
                   ? (frostedGlassWidgets 
-                      ? "bg-white/15 text-white border border-white/20 shadow-none" 
-                      : (isDark ? "bg-[#4AC4FE] text-white shadow-xl shadow-none" : "bg-white text-[#4AC4FE] shadow-xl shadow-none border border-[#4AC4FE]/10"))
+                      ? "border-white text-white" 
+                      : (isDark ? "border-[#4AC4FE] text-[#4AC4FE]" : "border-[#4AC4FE] text-[#4AC4FE]"))
                   : (frostedGlassWidgets
-                      ? "text-white/60 hover:text-white hover:bg-white/5"
-                      : (isDark ? "text-white/40 hover:text-white hover:bg-white/5" : "text-slate-500 hover:bg-white"))
+                      ? "border-transparent text-white/50 hover:text-white"
+                      : (isDark ? "border-transparent text-white/40 hover:text-white" : "border-transparent text-slate-550 hover:text-slate-800"))
               }`}
             >
-              <cat.icon className="w-[16px] h-[16px] lg:w-[20px] lg:h-[20px] shrink-0" strokeWidth={activeCategory === cat.id ? 2.5 : 1.5} />
+              <cat.icon className="w-[16px] h-[16px] shrink-0" strokeWidth={activeCategory === cat.id ? 2.5 : 1.5} />
               <span className={`text-[12px] lg:text-[13px] font-bold tracking-tight ${activeCategory === cat.id ? "font-black" : ""}`}>{cat.name}</span>
-              {activeCategory === cat.id && (
-                <motion.div 
-                  layoutId="activeCat"
-                  className={`absolute left-0 bottom-0 lg:bottom-auto lg:top-1/2 lg:-translate-y-1/2 h-[3px] lg:h-4 w-full lg:w-1.5 rounded-full ${frostedGlassWidgets ? "bg-white" : (isDark ? "bg-white" : "bg-[#4AC4FE]")}`} 
-                />
-              )}
             </button>
           ))}
         </div>
@@ -5906,7 +5954,7 @@ function RejuvenatedSettings(props: any) {
           ? "bg-transparent text-white" 
           : (isDark ? "" : "bg-slate-50/5")
       }`}>
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto align-top">
           {renderContent()}
         </div>
       </div>
@@ -10450,8 +10498,14 @@ function App() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   const touchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const globalTouchStartXRef = useRef<number | null>(null);
+  const globalTouchStartYRef = useRef<number | null>(null);
 
-  const startTouchTimer = () => {
+  const startTouchTimer = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    globalTouchStartXRef.current = touch.clientX;
+    globalTouchStartYRef.current = touch.clientY;
+
     if (window.innerWidth < 768) {
       if (touchTimeoutRef.current) clearTimeout(touchTimeoutRef.current);
       touchTimeoutRef.current = setTimeout(() => {
@@ -10467,6 +10521,53 @@ function App() {
     if (touchTimeoutRef.current) {
       clearTimeout(touchTimeoutRef.current);
       touchTimeoutRef.current = null;
+    }
+  };
+
+  const handleGlobalTouchEnd = (e: React.TouchEvent) => {
+    cancelTouchTimer();
+
+    if (globalTouchStartXRef.current === null || globalTouchStartYRef.current === null) return;
+
+    const endX = e.changedTouches[0].clientX;
+    const endY = e.changedTouches[0].clientY;
+
+    const diffX = endX - globalTouchStartXRef.current;
+    const diffY = endY - globalTouchStartYRef.current;
+
+    // Swipe horizontally to open sidebar
+    if (Math.abs(diffX) > Math.abs(diffY) * 1.5 && Math.abs(diffX) > 80) {
+      if (diffX > 0 && globalTouchStartXRef.current < 150) {
+        // Swipe from left to right -> open sidebar
+        if (isMobile && !isSidebarExpanded) {
+          setIsSidebarExpanded(true);
+        }
+      }
+    }
+
+    globalTouchStartXRef.current = null;
+    globalTouchStartYRef.current = null;
+  };
+
+  const navTouchStartXRef = useRef<number | null>(null);
+  const handleNavTouchStart = (e: React.TouchEvent) => {
+    e.stopPropagation();
+    navTouchStartXRef.current = e.touches[0].clientX;
+  };
+  const handleNavTouchEnd = (e: React.TouchEvent) => {
+    e.stopPropagation();
+    if (navTouchStartXRef.current === null) return;
+    const diff = e.changedTouches[0].clientX - navTouchStartXRef.current;
+    navTouchStartXRef.current = null;
+    if (Math.abs(diff) > 40) {
+      triggerNavBounce();
+      const addPages = Math.ceil(pinnedChannels.length / 4);
+      const totPages = 3 + addPages;
+      if (diff > 0) {
+        setNavPage((prev) => (prev - 1 + totPages) % totPages);
+      } else {
+        setNavPage((prev) => (prev + 1) % totPages);
+      }
     }
   };
 
@@ -10517,6 +10618,11 @@ function App() {
   const [isWidgetsOpen, setIsWidgetsOpen] = useState(false);
   const [activeDashboardTab, setActiveDashboardTab] = useState<"widgets" | "changelogs" | "labs" | "settings">("widgets");
   const [activeTab, setActiveTab] = useState("Trang chủ");
+  const [navBounce, setNavBounce] = useState(false);
+  const triggerNavBounce = useCallback(() => {
+    setNavBounce(true);
+    setTimeout(() => setNavBounce(false), 200);
+  }, []);
   const [isSettingsLoading, setIsSettingsLoading] = useState(false);
   const [homeScrollY, setHomeScrollY] = useState(0);
 
@@ -10827,7 +10933,7 @@ const [sidebarWidth, setSidebarWidth] = useState(() => {
     },
     { 
       url: "https://static.wikia.nocookie.net/ftv/images/b/b6/666.png/revision/latest/scale-to-width-down/1000?cb=20260604070054&path-prefix=vi", 
-      title: "Chào đón VTV6 trở lại cùng Vplay!",
+      title: "Chào đón VTV6 trở lại",
       desc: "Kênh truyền hình Thể thao chuyên biệt sắp sửa quay trở lại. Hãy sẵn sàng trải nghiệm các trận đấu kịch tính và đầy cảm xúc trực tiếp cùng Vplay!",
       tag: "VTV6",
       channel: vtv6Channel || undefined,
@@ -11083,11 +11189,6 @@ const [headingBar, setHeadingBar] = useState(() => {
     return () => clearInterval(timer);
   }, [updateWeather]);
 
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
   // Track setting changes to display "Đã thay đổi cài đặt xyz" toasts
   const isFirstSettingsMount = useRef(true);
   const prevSettingsInfo = useRef({
@@ -11223,6 +11324,9 @@ const [headingBar, setHeadingBar] = useState(() => {
       onAlert("Lỗi", "Trình duyệt không hỗ trợ nhận diện giọng nói");
     }
   };
+
+  const [isNavVisible, setIsNavVisible] = useState(true);
+  const lastScrollY = useRef(0);
 
   const [navPage, setNavPage] = useState<number>(() => {
     return Number(localStorage.getItem("vplay_nav_page")) || 0;
@@ -11736,7 +11840,7 @@ const [headingBar, setHeadingBar] = useState(() => {
       } h-screen flex font-sans transition-all duration-500 overflow-hidden ${useSidebar ? "flex-row" : "flex-col"} ${featureFlags.disable_animation ? "reduce-animations" : ""}`}
       onContextMenu={handleGlobalContextMenu}
       onTouchStart={startTouchTimer}
-      onTouchEnd={cancelTouchTimer}
+      onTouchEnd={handleGlobalTouchEnd}
       onTouchMove={cancelTouchTimer}
       style={{
         paddingLeft: useSidebar && !isMobile && !isSidebarRight 
@@ -12344,6 +12448,14 @@ const [headingBar, setHeadingBar] = useState(() => {
             } else if (homeScrollY !== 0) {
               setHomeScrollY(0);
             }
+
+            // Auto hide/show bottom navigation bar on scroll down/up
+            if (scrollTop > lastScrollY.current && scrollTop > 50) {
+              setIsNavVisible(false);
+            } else {
+              setIsNavVisible(true);
+            }
+            lastScrollY.current = scrollTop;
           }}
           className={`flex-1 overflow-y-auto ${(displayTab === "Cài đặt" || displayTab === "Live") ? "pb-0" : "pb-32"} flex flex-col w-full max-w-full overflow-x-hidden bg-transparent`}
         >
@@ -12620,10 +12732,14 @@ const [headingBar, setHeadingBar] = useState(() => {
                 x: 0, 
                 width: isSidebarExpanded ? (isCompactMode ? 100 : sidebarWidth) : (isMobile ? "100%" : 80),
                 opacity: (isMobile && !isSidebarExpanded) ? 0 : 1,
-                visibility: (isMobile && !isSidebarExpanded) ? "hidden" : "visible" as any
+                visibility: (isMobile && !isSidebarExpanded) ? "hidden" : "visible" as any,
+                scale: navBounce ? 0.97 : 1
               }}
               exit={{ x: isSidebarRight ? sidebarWidth : -sidebarWidth }}
-              transition={{ type: "spring", damping: 30, stiffness: 300 }}
+              transition={{
+                scale: { type: "spring", stiffness: 450, damping: 14 },
+                default: { type: "spring", damping: 30, stiffness: 300 }
+              }}
               className={`fixed z-[120] flex flex-col transition-all duration-300 overflow-visible ${
                 isSidebarRight 
                   ? (sidebarDisplay === "float" && !isMobile ? "right-6" : "right-0") 
@@ -12665,6 +12781,7 @@ const [headingBar, setHeadingBar] = useState(() => {
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.8 }}
                             onClick={() => {
+                                triggerNavBounce();
                                 if (isCompactMode) {
                                     setIsSidebarExpanded(!isSidebarExpanded);
                                 } else {
@@ -12691,7 +12808,10 @@ const [headingBar, setHeadingBar] = useState(() => {
                         >
                           <Tooltip text="Thu gọn/Mở rộng sidebar" isDark={isDark} position={isSidebarRight ? "left" : "right"} disabled={isSidebarExpanded}>
                             <button 
-                              onClick={() => setIsSidebarExpanded(false)}
+                              onClick={() => {
+                                triggerNavBounce();
+                                setIsSidebarExpanded(false);
+                              }}
                               className={`p-2 rounded-xl transition-all ${isDark ? "hover:bg-white/10 text-white" : "hover:bg-black/5 text-black"}`}
                             >
                               <Menu size={28} />
@@ -12820,6 +12940,7 @@ const [headingBar, setHeadingBar] = useState(() => {
                     <Tooltip key={`side-nav-${tab.id || tab.name}-${idx}`} text={tab.name} isDark={isDark} position={isSidebarRight ? "left" : "right"} disabled={isSidebarExpanded && !isCompactMode}>
                       <button
                         onClick={() => {
+                          triggerNavBounce();
                           if (tab.id === "Widgets") {
                             setIsWidgetsOpen(true);
                             setActiveDashboardTab("widgets");
@@ -13113,20 +13234,27 @@ const [headingBar, setHeadingBar] = useState(() => {
       <div className={`fixed z-50 transition-all duration-500 ${
         useSidebar 
           ? "bottom-[-100%] opacity-0 pointer-events-none" 
-          : "bottom-0 left-0 w-full flex justify-center pb-4 md:pb-8"
+          : isNavVisible 
+            ? "bottom-0 left-0 w-full flex justify-center pb-2 md:pb-4"
+            : "bottom-[-140px] left-0 w-full flex justify-center opacity-0 pointer-events-none pb-2 md:pb-4"
       }`}
       onContextMenu={handleGlobalContextMenu}
       >
         <motion.div 
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="flex flex-col items-center gap-1.5 pointer-events-auto w-full max-w-lg px-4"
+          className="flex flex-col items-center gap-0 pointer-events-auto w-full max-w-lg px-4"
         >
           <motion.nav 
             key={`bottom-nav-bounce-${navPage}-${activeTab}-${activeChannel?.name || ''}`}
+            onTouchStart={handleNavTouchStart}
+            onTouchEnd={handleNavTouchEnd}
             initial={{ scale: 0.96 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", stiffness: 450, damping: 13 }}
+            animate={{ scale: navBounce ? 0.95 : 1 }}
+            transition={{
+              scale: { type: "spring", stiffness: 450, damping: 13 },
+              default: { type: "spring", stiffness: 450, damping: 13 }
+            }}
             className={`flex-1 w-full flex items-center justify-between p-2 transition-all duration-500 overflow-hidden relative ${
               liquidGlass === "tinted"
                 ? `rounded-full border shadow-[0_20px_40px_rgba(0,0,0,0.15)] backdrop-blur-[100px] bg-white/80 border-white/80`
@@ -13138,6 +13266,7 @@ const [headingBar, setHeadingBar] = useState(() => {
             {/* Prev Arrow */}
             <button 
               onClick={() => {
+                triggerNavBounce();
                 const addPages = Math.ceil(pinnedChannels.length / 4);
                 const totPages = 3 + addPages;
                 setNavPage((prev) => (prev - 1 + totPages) % totPages);
@@ -13170,6 +13299,7 @@ const [headingBar, setHeadingBar] = useState(() => {
                           <div key={`mob-nav-${tabId}`} className="flex-1 flex justify-center">
                             <button
                               onClick={() => {
+                                triggerNavBounce();
                                 if (tabId === "Live" && isBroadcastingLocked) {
                                   setIsLockModalOpen(true);
                                   return;
@@ -13345,6 +13475,7 @@ const [headingBar, setHeadingBar] = useState(() => {
                         <button
                           key={`nav-pinned-channel-${channel.name}-${cIdx}`}
                           onClick={() => {
+                            triggerNavBounce();
                             setActiveChannel(channel);
                             setActiveTab("Live");
                           }}
@@ -13370,6 +13501,7 @@ const [headingBar, setHeadingBar] = useState(() => {
             {/* Next Arrow */}
             <button 
               onClick={() => {
+                triggerNavBounce();
                 const addPages = Math.ceil(pinnedChannels.length / 4);
                 const totPages = 3 + addPages;
                 setNavPage((prev) => (prev + 1) % totPages);
@@ -13379,23 +13511,6 @@ const [headingBar, setHeadingBar] = useState(() => {
               <ChevronRight size={24} />
             </button>
           </motion.nav>
-
-          {/* Dots page indicators displayed outside the navigation bar */}
-          <div className="flex gap-1.5 select-none py-1.5 pointer-events-none">
-            {Array.from({ length: 3 + Math.ceil(pinnedChannels.length / 4) }).map((_, p) => {
-              const isActive = navPage === p;
-              return (
-                <div
-                  key={`nav-dot-outside-${p}`}
-                  className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                    isActive 
-                      ? "bg-[#4AC4FE] w-3.5" 
-                      : isDark ? "bg-white/20" : "bg-black/20"
-                  }`}
-                />
-              );
-            })}
-          </div>
 
           <FloatingTooltip text={hoveredTab || ""} show={!!hoveredTab} targetRect={hoveredTabRect} />
         </motion.div>
