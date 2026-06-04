@@ -341,8 +341,8 @@ const SplashScreen = ({
   return (
     <motion.div
       initial={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.8 }}
+      exit={{ opacity: 1 }}
+      transition={{ duration: 0 }}
       className="fixed inset-0 z-[110] flex flex-col items-center justify-center overflow-hidden bg-black"
     >
       
@@ -402,9 +402,14 @@ const SplashScreen = ({
                   />
                 </svg>
               </div>
-              <span className="text-white text-base sm:text-lg md:text-xl font-normal tracking-wide mt-3 select-none flex items-center justify-center gap-1.5">
-                Sản phẩm của <span className="text-white font-normal">VNRT</span>
-              </span>
+              <div className="flex flex-col items-center gap-1 mt-3 select-none">
+                <span className="text-white text-base sm:text-lg md:text-xl font-normal tracking-wide flex items-center justify-center gap-1.5">
+                  Sản phẩm của <span className="text-white font-normal">VNRT</span>
+                </span>
+                <span className="text-white/60 text-xs sm:text-sm font-light tracking-wide animate-pulse">
+                  Đang tải bản cập nhật
+                </span>
+              </div>
             </div>
           </div>
         )}
@@ -5027,7 +5032,7 @@ function RejuvenatedSettings(props: any) {
                 </div>
                 <div className="flex justify-between items-center py-2.5 border-b border-white/5">
                   <span className={`text-xs md:text-sm font-bold uppercase tracking-wider opacity-40 ${isDark ? "text-white" : "text-slate-900"}`}>Build</span>
-                  <span className="text-sm md:text-base font-bold text-[#4AC4FE]">26609</span>
+                  <span className="text-sm md:text-base font-bold text-[#4AC4FE]">26614</span>
                 </div>
                 <div className="flex justify-between items-center py-2.5">
                   <span className={`text-xs md:text-sm font-bold uppercase tracking-wider opacity-40 ${isDark ? "text-white" : "text-slate-900"}`}>Compiled</span>
@@ -5741,7 +5746,7 @@ function RejuvenatedSettings(props: any) {
                       </div>
                       <div className="flex justify-between items-center text-sm">
                         <span className={`${isDark ? "text-white/60" : "text-slate-400"} font-medium`}>Build:</span>
-                        <span className={`${isDark ? "text-white" : "text-slate-800"} font-bold`}>26609</span>
+                        <span className={`${isDark ? "text-white" : "text-slate-800"} font-bold`}>26614</span>
                       </div>
                       <div className="flex justify-between items-center text-sm col-span-1">
                         <span className={`${isDark ? "text-white/60" : "text-slate-400"} font-medium whitespace-nowrap mr-2`}>Compiled:</span>
@@ -6139,7 +6144,7 @@ function SettingsContent({
                   <span className={`text-[9px] md:text-[10px] font-bold tracking-[0.4em] ${isDark ? "text-white/40" : "text-slate-400"}`}>June 2026 Update</span>
                   <div className="flex items-center gap-1.5 md:gap-2">
                     <span className="px-1.5 py-0.5 bg-amber-500/20 text-amber-500 text-[8px] md:text-[9px] font-bold rounded-md uppercase">26M6</span>
-                    <span className="px-1.5 py-0.5 bg-cyan-500/20 text-cyan-500 text-[8px] md:text-[9px] font-bold rounded-md uppercase">Build 26609</span>
+                    <span className="px-1.5 py-0.5 bg-cyan-500/20 text-cyan-500 text-[8px] md:text-[9px] font-bold rounded-md uppercase">Build 26614</span>
                   </div>
                 </div>
               </div>
@@ -6157,7 +6162,7 @@ function SettingsContent({
                    <p className={`text-base md:text-lg font-bold ${isDark ? "text-white" : "text-slate-900"}`}>June 2026 Update</p>
                  </div>
                </div>
-               <span className="px-3 py-1.5 bg-amber-500 text-slate-900 text-[9px] md:text-[10px] font-bold rounded-lg md:rounded-xl shadow-lg shadow-amber-500/30">Build 26609</span>
+               <span className="px-3 py-1.5 bg-amber-500 text-slate-900 text-[9px] md:text-[10px] font-bold rounded-lg md:rounded-xl shadow-lg shadow-amber-500/30">Build 26614</span>
              </div>
 
              <div className="grid grid-cols-2 gap-3 md:gap-4">
@@ -7217,7 +7222,7 @@ function WhatsNewPopup({ isDark, onClose, liquidGlass }: { isDark: boolean, onCl
                 What's new <span className="text-[#4AC4FE] block sm:inline">in Vplay Dev</span>
               </h2>
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="px-2 py-0.5 md:px-3 md:py-1 rounded-full bg-[#4AC4FE]/10 text-[#4AC4FE] text-[9px] md:text-[10px] font-bold tracking-widest uppercase border border-[#4AC4FE]/20">Build 26609</span>
+                <span className="px-2 py-0.5 md:px-3 md:py-1 rounded-full bg-[#4AC4FE]/10 text-[#4AC4FE] text-[9px] md:text-[10px] font-bold tracking-widest uppercase border border-[#4AC4FE]/20">Build 26614</span>
                 <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
                 <span className="text-[9px] md:text-[10px] font-bold text-slate-500 uppercase tracking-widest">Stable Beta</span>
               </div>
@@ -9616,7 +9621,7 @@ function WidgetsDashboard({
                                                                   <div className="text-4xl font-black text-slate-900 tracking-tighter bg-gradient-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent my-1">
                                                                     {formatTime(currentTime)}
                                                                   </div>
-                                                                  <span className="text-[9px] text-slate-400 font-semibold">Công nghệ đồng bộ tần số VNRT - 26609</span>
+                                                                  <span className="text-[9px] text-slate-400 font-semibold">Công nghệ đồng bộ tần số VNRT - 26614</span>
                                                                 </div>
 
                                                                 {/* Custom formatted calendar row showing we have full grid style calendar view */}
@@ -9677,7 +9682,7 @@ function WidgetsDashboard({
                                                           </div>
                                                           <div className="flex justify-between items-center text-[10px]">
                                                             <span className="opacity-50">Build</span>
-                                                             <span className="font-bold text-[#4AC4FE]">26609</span>
+                                                             <span className="font-bold text-[#4AC4FE]">26614</span>
                                                           </div>
                                                           <div className="flex justify-between items-center text-[10px]">
                                                             <span className="opacity-50">Compiled</span>
@@ -10564,8 +10569,10 @@ function App() {
       const addPages = Math.ceil(pinnedChannels.length / 4);
       const totPages = 3 + addPages;
       if (diff > 0) {
+        setSlideDirection(-1);
         setNavPage((prev) => (prev - 1 + totPages) % totPages);
       } else {
+        setSlideDirection(1);
         setNavPage((prev) => (prev + 1) % totPages);
       }
     }
@@ -11326,11 +11333,13 @@ const [headingBar, setHeadingBar] = useState(() => {
   };
 
   const [isNavVisible, setIsNavVisible] = useState(true);
+  const [isTopBarVisible, setIsTopBarVisible] = useState(true);
   const lastScrollY = useRef(0);
 
   const [navPage, setNavPage] = useState<number>(() => {
     return Number(localStorage.getItem("vplay_nav_page")) || 0;
   });
+  const [slideDirection, setSlideDirection] = useState(1); // 1 = right, -1 = left
   const navTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const resetNavTimer = useCallback(() => {
@@ -11668,10 +11677,10 @@ const [headingBar, setHeadingBar] = useState(() => {
   useEffect(() => {
     const handleWhatsNew = async () => {
       const lastVersion = localStorage.getItem("vplay_version");
-      const currentVersion = "26609";
+      const currentVersion = "26614";
       
       if (lastVersion !== currentVersion) {
-        if (currentVersion !== "26609" && currentVersion !== "26603") {
+        if (currentVersion !== "26614" && currentVersion !== "26603") {
           setShowWhatsNew(true);
         }
         localStorage.setItem("vplay_version", currentVersion);
@@ -11854,7 +11863,9 @@ const [headingBar, setHeadingBar] = useState(() => {
       >
       {!showSplash && headingBar && (
         <div 
-          className="fixed top-0 left-0 right-0 z-[200] transition-all duration-300"
+          className={`fixed left-0 right-0 z-[200] transition-all duration-300 ${
+            isTopBarVisible ? "top-0" : "top-[-56px] opacity-0 pointer-events-none"
+          }`}
         >
           <TopBar 
             isDark={isDark} 
@@ -11958,7 +11969,7 @@ const [headingBar, setHeadingBar] = useState(() => {
               <div className="grid grid-cols-2 gap-3">
                 <button 
                   onClick={() => setShowForceResetPopup(false)} 
-                  className={`py-2.5 rounded-xl font-bold text-xs transition-all border ${
+                  className={`py-2.5 rounded-xl font-bold text-xs transition-colors border ${
                     isDark ? "bg-white/5 border-white/5 text-slate-300 hover:bg-white/10" : "bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200"
                   }`}
                 >
@@ -11971,7 +11982,7 @@ const [headingBar, setHeadingBar] = useState(() => {
                     setSplashDuration(60000); 
                     setShowSplash(true); 
                   }} 
-                  className="py-2.5 rounded-xl font-bold text-xs transition-all bg-[#FF453A] hover:bg-red-700 text-white shadow-lg shadow-red-600/20 active:scale-[0.98]"
+                  className="py-2.5 rounded-xl font-bold text-xs transition-colors bg-[#FF453A] hover:bg-red-700 text-white shadow-lg shadow-red-600/20 active:scale-[0.98]"
                 >
                   Đồng ý
                 </button>
@@ -12053,11 +12064,11 @@ const [headingBar, setHeadingBar] = useState(() => {
                   toggleFavorite(channelContextMenu.ch);
                   setChannelContextMenu(null);
                 }}
-                className={`w-full text-left truncate flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                className={`w-full text-left truncate flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-colors ${
                   isDark ? "hover:bg-white/5 text-slate-200 hover:text-white" : "hover:bg-slate-100 text-slate-700 hover:text-slate-900"
                 }`}
               >
-                <Heart size={14} className={favorites.includes(channelContextMenu.ch.name) ? "text-red-500 fill-red-500 animate-pulse" : "opacity-60"} />
+                <Heart size={14} className={favorites.includes(channelContextMenu.ch.name) ? "text-[#E02424] fill-[#E02424] animate-pulse" : "opacity-60"} />
                 {favorites.includes(channelContextMenu.ch.name) ? "Loại bỏ khỏi yêu thích" : "Thêm vào yêu thích"}
               </button>
 
@@ -12067,7 +12078,7 @@ const [headingBar, setHeadingBar] = useState(() => {
                   togglePinChannel(channelContextMenu.ch);
                   setChannelContextMenu(null);
                 }}
-                className={`w-full text-left truncate flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                className={`w-full text-left truncate flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold transition-colors ${
                   isDark ? "hover:bg-white/5 text-slate-200 hover:text-white" : "hover:bg-slate-100 text-slate-700 hover:text-slate-900"
                 }`}
               >
@@ -12077,18 +12088,21 @@ const [headingBar, setHeadingBar] = useState(() => {
             </motion.div>
           </>
         )}
+      </AnimatePresence>
+
+      <AnimatePresence>
         {isMobileContextMenuOpen && (
           <div className="fixed inset-0 z-[999] flex items-end justify-center md:hidden">
-            {/* Backdrop */}
+            {/* Backdrop: solid darkened mask without blur */}
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMobileContextMenuOpen(false)}
-              className="absolute inset-0 bg-black/60 backdrop-blur-sm z-10"
+              className="absolute inset-0 bg-black/75 z-10"
             />
             
-            {/* Modal/Drawer Container */}
+            {/* Modal/Drawer Container: solid opaque background without blur */}
             <motion.div 
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
@@ -12096,35 +12110,14 @@ const [headingBar, setHeadingBar] = useState(() => {
               transition={{ type: "spring", damping: 25, stiffness: 250 }}
               className={`relative w-full max-h-[85vh] flex flex-col rounded-t-[32px] border-t overflow-hidden shadow-2xl p-6 z-20 ${
                 isDark 
-                  ? "bg-[#11131c]/95 border-white/10 text-white" 
-                  : "bg-white/95 border-slate-200 text-slate-900 shadow-2xl"
-              } backdrop-blur-3xl`}
+                  ? "bg-[#11131c] border-white/10 text-white" 
+                  : "bg-white border-slate-200 text-slate-900 shadow-2xl"
+              }`}
               style={{ paddingBottom: "env(safe-area-inset-bottom, 24px)" }}
             >
               {/* Drag indicator/handle */}
               <div className="w-12 h-1.5 rounded-full bg-slate-500/30 mx-auto mb-5 shrink-0" onClick={() => setIsMobileContextMenuOpen(false)} />
               
-              {/* Header */}
-              <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-200/10 flex-shrink-0">
-                <div className="flex items-center gap-2">
-                  <div className="p-1.5 rounded-lg bg-[#4AC4FE]/10 text-[#4AC4FE]">
-                    <Layers size={18} />
-                  </div>
-                  <div>
-                    <span className="text-sm sm:text-base font-black uppercase tracking-wider block">Menu Tùy Chọn</span>
-                    <span className="text-[10px] opacity-60 font-medium block">Vplay Context Menu</span>
-                  </div>
-                </div>
-                <button 
-                  onClick={() => setIsMobileContextMenuOpen(false)}
-                  className={`p-2 rounded-full transition-colors ${
-                    isDark ? "hover:bg-white/10 text-white/60 hover:text-white" : "hover:bg-slate-100 text-slate-500 hover:text-slate-800"
-                  }`}
-                >
-                  <X size={18} />
-                </button>
-              </div>
-
               {/* Options list */}
               <div className="space-y-2 overflow-y-auto pr-1">
                 <button 
@@ -12205,16 +12198,21 @@ const [headingBar, setHeadingBar] = useState(() => {
                   <span className="text-sm font-semibold">Tải lại ứng dụng</span>
                 </button>
 
+                {/* Hard Reset Feature Options */}
                 <button 
-                  onClick={() => { handleOpenSettings(); setIsMobileContextMenuOpen(false); }} 
+                  onClick={() => { 
+                    localStorage.clear(); 
+                    sessionStorage.clear();
+                    window.location.reload(); 
+                  }} 
                   className={`w-full flex items-center justify-start gap-4 px-4 py-3.5 rounded-2xl border transition-all ${
                     isDark 
-                      ? "bg-[#4AC4FE]/10 hover:bg-[#4AC4FE]/20 border-[#4AC4FE]/10 text-[#4AC4FE]" 
-                      : "bg-[#4AC4FE]/5 hover:bg-[#4AC4FE]/10 border-[#4AC4FE]/20 text-[#4AC4FE]"
+                      ? "bg-red-500/10 hover:bg-red-500/20 border-red-500/20 text-[#FF453A] font-bold" 
+                      : "bg-red-50 hover:bg-red-100 border-red-100 text-red-600 font-bold"
                   }`}
                 >
-                  <SettingsIcon size={18} />
-                  <span className="text-sm font-bold">Mở cài đặt hệ thống</span>
+                  <Trash2 size={18} />
+                  <span className="text-sm">Hard reset</span>
                 </button>
               </div>
             </motion.div>
@@ -12452,25 +12450,19 @@ const [headingBar, setHeadingBar] = useState(() => {
             // Auto hide/show bottom navigation bar on scroll down/up
             if (scrollTop > lastScrollY.current && scrollTop > 50) {
               setIsNavVisible(false);
+              setIsTopBarVisible(false);
             } else {
               setIsNavVisible(true);
+              setIsTopBarVisible(true);
             }
             lastScrollY.current = scrollTop;
           }}
           className={`flex-1 overflow-y-auto ${(displayTab === "Cài đặt" || displayTab === "Live") ? "pb-0" : "pb-32"} flex flex-col w-full max-w-full overflow-x-hidden bg-transparent`}
         >
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={displayTab}
-              initial={{ opacity: 0, y: 30, scale: 0.98, filter: "blur(10px)" }}
-              animate={{ opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
-              exit={{ opacity: 0, y: -30, scale: 1.02, filter: "blur(10px)" }}
-              transition={{ 
-                duration: 0.6, 
-                ease: [0.23, 1, 0.32, 1] 
-              }}
-              className={`h-full flex flex-col ${(displayTab === "Cài đặt" || displayTab === "Live") ? "pt-0" : "pt-4 md:pt-8"}`}
-            >
+          <div
+            key={displayTab}
+            className={`h-full flex flex-col ${(displayTab === "Cài đặt" || displayTab === "Live") ? "pt-0" : "pt-4 md:pt-8"}`}
+          >
               {displayTab === "Trang chủ" && (
                 <HomeContent 
                   setActiveTab={setActiveTab} 
@@ -12688,8 +12680,7 @@ const [headingBar, setHeadingBar] = useState(() => {
                 <UpdateLogsContent isDark={isDark} onBack={() => handleOpenSettings()} featureFlags={featureFlags} loadingTreatment={loadingTreatment} handleOpenSettings={handleOpenSettings} />
               )}
               {displayTab === "Quản trị" && isAdmin && <AdminContent isDark={isDark} liquidGlass={liquidGlass} />}
-            </motion.div>
-          </AnimatePresence>
+          </div>
         </div>
       </div>
       
@@ -13168,7 +13159,7 @@ const [headingBar, setHeadingBar] = useState(() => {
                                 </div>
                                 <div className="flex justify-between items-center text-[11px]">
                                   <span className="opacity-50">Build</span>
-                                                             <span className="font-bold text-[#4AC4FE]">26609</span>
+                                  <span className="font-bold text-[#4AC4FE]">26614</span>
                                 </div>
                                 <div className="flex justify-between items-center text-[11px]">
                                   <span className="opacity-50">Compiled</span>
@@ -13246,14 +13237,14 @@ const [headingBar, setHeadingBar] = useState(() => {
           className="flex flex-col items-center gap-0 pointer-events-auto w-full max-w-lg px-4"
         >
           <motion.nav 
-            key={`bottom-nav-bounce-${navPage}-${activeTab}-${activeChannel?.name || ''}`}
+            key="bottom-nav-stable"
             onTouchStart={handleNavTouchStart}
             onTouchEnd={handleNavTouchEnd}
             initial={{ scale: 0.96 }}
-            animate={{ scale: navBounce ? 0.95 : 1 }}
+            animate={{ scale: navBounce ? 0.94 : 1 }}
             transition={{
-              scale: { type: "spring", stiffness: 450, damping: 13 },
-              default: { type: "spring", stiffness: 450, damping: 13 }
+              scale: { type: "spring", stiffness: 900, damping: 18 },
+              default: { type: "spring", stiffness: 900, damping: 18 }
             }}
             className={`flex-1 w-full flex items-center justify-between p-2 transition-all duration-500 overflow-hidden relative ${
               liquidGlass === "tinted"
@@ -13263,27 +13254,30 @@ const [headingBar, setHeadingBar] = useState(() => {
                   : `rounded-none border-t w-full justify-around backdrop-blur-none shadow-2xl ${isDark ? "bg-slate-900/95 border-white/5" : "bg-white/60 border-white/40"}`
             }`}>
             
-            {/* Prev Arrow */}
-            <button 
-              onClick={() => {
-                triggerNavBounce();
-                const addPages = Math.ceil(pinnedChannels.length / 4);
-                const totPages = 3 + addPages;
-                setNavPage((prev) => (prev - 1 + totPages) % totPages);
-              }}
-              className={`p-2 rounded-full hover:bg-black/5 transition-colors z-20 ${isDark ? "text-white/40" : "text-black/40"}`}
-            >
-              <ChevronLeft size={24} />
-            </button>
+            {/* Prev Arrow - Only shown on desktop as mobile uses gestures */}
+            {!isMobile && (
+              <button 
+                onClick={() => {
+                  triggerNavBounce();
+                  const addPages = Math.ceil(pinnedChannels.length / 4);
+                  const totPages = 3 + addPages;
+                  setSlideDirection(-1);
+                  setNavPage((prev) => (prev - 1 + totPages) % totPages);
+                }}
+                className={`p-2 rounded-full hover:bg-black/5 transition-colors z-20 ${isDark ? "text-white/40" : "text-black/40"}`}
+              >
+                <ChevronLeft size={24} />
+              </button>
+            )}
 
             <div className="flex-1 overflow-hidden relative h-12 flex items-center justify-center w-full">
               <AnimatePresence initial={false}>
                 <motion.div
                   key={`nav-page-${navPage}`}
-                  initial={{ x: 60, opacity: 0 }}
+                  initial={{ x: slideDirection * 160, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
-                  exit={{ x: -100, opacity: 0, position: "absolute", transition: { duration: 0.15 } }}
-                  transition={{ type: "spring", damping: 20, stiffness: 220 }}
+                  exit={{ x: -slideDirection * 160, opacity: 0, position: "absolute", transition: { duration: 0.12 } }}
+                  transition={{ type: "spring", damping: 28, stiffness: 350 }}
                   className="absolute inset-x-0 top-0 bottom-0 flex items-center justify-around w-full h-full px-4"
                 >
                   {navPage === 0 && (
@@ -13315,13 +13309,13 @@ const [headingBar, setHeadingBar] = useState(() => {
                                   : isGlassy ? "text-white/70 hover:text-white" : liquidGlass === "tinted" ? "text-black hover:opacity-100 opacity-60" : isDark ? "text-slate-400 hover:text-white" : "text-black hover:opacity-100"
                               }`}
                             >
-                              {isActive && liquidGlass && (
+                              {isActive && (
                                 <motion.div
-                                  layoutId="activeTabPill"
-                                  className={`absolute inset-0 rounded-full z-[-1] shadow-[0_4px_12px_rgba(0,0,0,0.1)] ${
-                                    isLiveTab ? "bg-red-500/10 border border-red-500/20" : isGlassy ? "bg-white/20" : "bg-white"
+                                  layoutId="activeTabUnderline"
+                                  className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-[3.5px] w-6 rounded-full z-10 ${
+                                    isLiveTab ? "bg-red-500 shadow-[0_2px_8px_rgba(239,68,68,0.4)]" : "bg-[#4AC4FE] shadow-[0_2px_8px_rgba(74,196,254,0.4)]"
                                   }`}
-                                  transition={{ type: "spring", bounce: 0.5, duration: 0.6 }}
+                                  transition={{ type: "spring", bounce: 0.25, duration: 0.4 }}
                                 />
                               )}
                               <motion.div
@@ -13498,18 +13492,21 @@ const [headingBar, setHeadingBar] = useState(() => {
               </AnimatePresence>
             </div>
 
-            {/* Next Arrow */}
-            <button 
-              onClick={() => {
-                triggerNavBounce();
-                const addPages = Math.ceil(pinnedChannels.length / 4);
-                const totPages = 3 + addPages;
-                setNavPage((prev) => (prev + 1) % totPages);
-              }}
-              className={`p-2 rounded-full hover:bg-black/5 transition-colors z-20 ${isDark ? "text-white/40" : "text-black/40"}`}
-            >
-              <ChevronRight size={24} />
-            </button>
+            {/* Next Arrow - Only shown on desktop as mobile uses gestures */}
+            {!isMobile && (
+              <button 
+                onClick={() => {
+                  triggerNavBounce();
+                  const addPages = Math.ceil(pinnedChannels.length / 4);
+                  const totPages = 3 + addPages;
+                  setSlideDirection(1);
+                  setNavPage((prev) => (prev + 1) % totPages);
+                }}
+                className={`p-2 rounded-full hover:bg-black/5 transition-colors z-20 ${isDark ? "text-white/40" : "text-black/40"}`}
+              >
+                <ChevronRight size={24} />
+              </button>
+            )}
           </motion.nav>
 
           <FloatingTooltip text={hoveredTab || ""} show={!!hoveredTab} targetRect={hoveredTabRect} />
