@@ -509,7 +509,7 @@ function FloatingTooltip({ text, show, targetRect }: { text: string, show: boole
   );
 }
 
-function ChannelLogo({ src, alt, className, isDark, liquidGlass, status }: { src: string, alt: string, className?: string, isDark: boolean, liquidGlass?: "glassy" | "tinted", status?: string }) {
+function ChannelLogo({ src, alt, className, isDark, liquidGlass, status, category }: { src: string, alt: string, className?: string, isDark: boolean, liquidGlass?: "glassy" | "tinted", status?: string, category?: string }) {
   const [error, setError] = useState(false);
 
   if (error || !src || src === "LOGO THÊM VÀO SAU") {
@@ -528,8 +528,13 @@ function ChannelLogo({ src, alt, className, isDark, liquidGlass, status }: { src
       : "https://static.wikia.nocookie.net/ftv/images/7/7f/Vtd.png/revision/latest/scale-to-width-down/1000?cb=20260601094859&path-prefix=vi";
   }
 
+  const isVTVcab = category === "VTVcab" || alt.includes("ON");
   const isShrunk = alt.includes("THVL") || alt.includes("Vĩnh Long") || alt.includes("QNgTV") || alt.includes("Quảng Ngãi");
-  const scaleClass = isShrunk ? "scale-[0.8]" : "scale-[1.1]";
+  const scaleClass = isVTVcab 
+    ? "scale-[1.1]" 
+    : isShrunk 
+      ? "scale-[1.0]" 
+      : "scale-[1.35]";
 
   const isVTV5_TN = alt === "VTV5 Tây Nguyên";
   const isVTV5_TNB = alt === "VTV5 Tây Nam Bộ";
@@ -637,7 +642,7 @@ const ChannelCard = React.memo(function ChannelCard({ ch, onClick, isDark, isAct
       <motion.button
         whileTap={{ scale: 0.98 }}
         onClick={onClick}
-        className={`w-full ${isLiveTab ? "aspect-[1.5/1]" : "aspect-square"} p-2.5 xs:p-3 sm:p-5 flex items-center justify-center relative overflow-hidden transition-colors duration-200 z-10 rounded-2xl border-[3px] ${
+        className={`w-full ${isLiveTab ? "aspect-[1.5/1]" : "aspect-square"} p-2.5 xs:p-3 sm:p-5 flex items-center justify-center relative overflow-hidden transition-none z-10 rounded-2xl border-[3px] ${
           isActive
             ? "border-[#4AC4FE] shadow-lg shadow-[#4AC4FE]/40 scale-[1.03]"
             : isDark
@@ -679,6 +684,7 @@ const ChannelCard = React.memo(function ChannelCard({ ch, onClick, isDark, isAct
                isDark={isDark} 
                liquidGlass={liquidGlass} 
                status={ch.status} 
+               category={ch.category}
              />
           </div>
         </div>
@@ -772,6 +778,9 @@ const Countdown = ({ targetDate, isDark }: { targetDate: string, isDark: boolean
 
 const RenderSlideContent = ({ slide }: { slide: any }) => {
   if (slide.logo) {
+    const isVTVcab = slide.channel?.category === "VTVcab" || slide.tag?.includes("VTVcab") || slide.title?.includes("VTVCab");
+    const logoScale = isVTVcab ? "" : "scale-[1.25] sm:scale-[1.3] md:scale-[1.35]";
+
     return (
       <div className={`relative w-full h-full ${slide.bgGradient || "bg-gradient-to-br from-[#131520] via-[#1a1c29] to-[#0f111a]"} flex flex-col items-center justify-center p-6 select-none overflow-hidden group`}>
         {/* Modern clean stripes backdrop detail */}
@@ -788,7 +797,7 @@ const RenderSlideContent = ({ slide }: { slide: any }) => {
         <img 
           src={slide.logo} 
           alt={slide.title}
-          className="w-40 h-40 sm:w-56 sm:h-56 md:w-72 md:h-72 object-contain z-10 transition-transform duration-500 group-hover:scale-110 drop-shadow-[0_20px_48px_rgba(0,0,0,0.75)]"
+          className={`w-40 h-40 sm:w-56 sm:h-56 md:w-72 md:h-72 object-contain z-10 transition-transform duration-500 group-hover:scale-110 drop-shadow-[0_20px_48px_rgba(0,0,0,0.75)] ${logoScale}`}
           referrerPolicy="no-referrer"
         />
 
@@ -1337,81 +1346,34 @@ function HomeContent({
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className={`p-6 xs:p-8 md:p-16 rounded-[32px] md:rounded-[64px] relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6 md:gap-10 shadow-2xl transition-all border ${isDark ? "bg-[#4AC4FE]/10 border-white/5" : "bg-[#4AC4FE]/10 border-[#4AC4FE]/10"}`}
+          className={`p-4 xs:p-6 md:py-8 md:px-12 rounded-3xl md:rounded-[40px] relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-4 md:gap-8 shadow-xl transition-all border ${isDark ? "bg-[#4AC4FE]/10 border-white/5" : "bg-[#4AC4FE]/10 border-[#4AC4FE]/10"}`}
         >
           <div className="absolute top-0 right-0 w-96 h-96 bg-[#4AC4FE]/10 blur-[100px] -mr-48 -mt-48" />
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 blur-[80px] -ml-32 -mb-32" />
           
-          <div className="relative z-10 space-y-4 md:space-y-6 text-center md:text-left flex-1">
-            <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] ${isDark ? "bg-[#4AC4FE]/20 text-[#4AC4FE]" : "bg-[#4AC4FE]/10 text-[#4AC4FE]"}`}>
+          <div className="relative z-10 space-y-3 md:space-y-4 text-center md:text-left flex-1">
+            <div className={`inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] ${isDark ? "bg-[#4AC4FE]/20 text-[#4AC4FE]" : "bg-[#4AC4FE]/10 text-[#4AC4FE]"}`}>
               <Crown size={12} /> VIP Membership
             </div>
-            <h2 className={`text-2xl xs:text-3xl md:text-6xl font-bold tracking-tight leading-[1.05] md:leading-[0.95] ${isDark ? "text-white" : "text-slate-900"}`}>
+            <h2 className={`text-xl xs:text-2xl md:text-4xl font-bold tracking-tight leading-[1.1] ${isDark ? "text-white" : "text-slate-900"}`}>
               Khám phá nhiều hơn <br /> 
-              <span className="text-[#4AC4FE]">với Vplay Beta</span>
+              <span className="text-[#4AC4FE]">với Vplay</span>
             </h2>
-            <p className={`max-w-xl font-medium text-xs md:text-lg leading-relaxed ${isDark ? "text-slate-400" : "text-slate-500"}`}>
-              Đăng nhập ngay để đồng bộ các kênh yêu thích của bạn, nhận được đề xuất chính xác nhất từ hệ thống AI và trải nghiệm tốc độ truyền tải vượt trội.
+            <p className={`max-w-xl font-medium text-xs md:text-base leading-relaxed ${isDark ? "text-slate-400" : "text-slate-500"}`}>
+              Đăng nhập ngay vào tài khoản Vplay để có cho mình một trải nghiệm xem truyền hình tốt nhất
             </p>
           </div>
           
           <div className="relative z-10 shrink-0 w-full md:w-auto">
             <button 
               onClick={onLogin} 
-              className="w-full md:w-auto btn-vibrant-3d px-8 py-4 md:px-16 md:py-7 text-sm md:text-xl font-bold tracking-widest rounded-2xl md:!rounded-[40px] !border-none !bg-[#4AC4FE] hover:!bg-[#4AC4FE] shadow-[0_20px_50px_rgba(147,51,234,0.3)]"
+              className="w-full md:w-auto btn-vibrant-3d px-6 py-3 md:px-12 md:py-5 text-xs md:text-lg font-bold tracking-widest rounded-xl md:!rounded-[24px] !border-none !bg-[#4AC4FE] hover:!bg-[#4AC4FE] shadow-[0_15px_40px_rgba(147,51,234,0.25)]"
             >
               ĐĂNG NHẬP
             </button>
           </div>
         </motion.div>
       )}
-
-      {/* Featured Ad Banner - System Highlight */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-        <div className={`p-6 md:p-12 rounded-[32px] md:rounded-[48px] border relative overflow-hidden flex flex-col justify-between group cursor-pointer ${isDark ? "bg-slate-900 border-white/5" : "bg-white border-slate-200 shadow-xl"}`}>
-          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 blur-3xl -mr-32 -mt-32 transition-all group-hover:scale-110" />
-          <div className="space-y-4 relative z-10">
-            <div className="p-3 w-fit rounded-2xl bg-blue-500/10 text-blue-500">
-              <Monitor size={24} className="md:w-7 md:h-7" />
-            </div>
-          <motion.h3 
-            initial={{ opacity: 0, x: -40 }}
-            animate={{ opacity: 1, x: 0 }}
-            className={`text-xl md:text-3xl font-black tracking-tighter ${isDark ? "text-white" : "text-slate-900"}`}
-          >
-            XEM VPLAY MỌI NƠI
-          </motion.h3>
-            <p className="text-slate-500 text-xs md:text-sm font-medium leading-relaxed max-w-xs">
-              Ứng dụng nền tảng Web mang lại trải nghiệm xem truyền hình mượt mà trên cả máy tính, máy tính bảng và điện thoại mà không cần cài đặt.
-            </p>
-          </div>
-          <div className="mt-6 md:mt-8 flex items-center gap-2 text-blue-500 font-semibold text-[10px] uppercase tracking-widest group-hover:translate-x-2 transition-transform">
-            Khám phá công nghệ <ArrowRight size={14} />
-          </div>
-        </div>
-
-        <div className={`p-6 md:p-12 rounded-[32px] md:rounded-[48px] border relative overflow-hidden flex flex-col justify-between group cursor-pointer ${isDark ? "bg-slate-900 border-white/5" : "bg-white border-slate-200 shadow-xl"}`}>
-          <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 blur-3xl -mr-32 -mt-32 transition-all group-hover:scale-110" />
-          <div className="space-y-4 relative z-10">
-            <div className="p-3 w-fit rounded-2xl bg-amber-500/10 text-amber-500">
-              <Zap size={24} className="md:w-7 md:h-7" />
-            </div>
-          <motion.h3 
-            initial={{ opacity: 0, x: -40 }}
-            animate={{ opacity: 1, x: 0 }}
-            className={`text-xl md:text-3xl font-black tracking-tighter ${isDark ? "text-white" : "text-slate-900"}`}
-          >
-            TỐC ĐỘ 4K SIÊU NHANH
-          </motion.h3>
-            <p className="text-slate-500 text-xs md:text-sm font-medium leading-relaxed max-w-xs">
-              Sử dụng CDN đa khu vực giúp luồng phát video đạt chất lượng 4K AI sắc nét với độ trễ tối thiểu, không giật lag ngay cả giờ cao điểm.
-            </p>
-          </div>
-          <div className="mt-6 md:mt-8 flex items-center gap-2 text-amber-500 font-semibold text-[10px] uppercase tracking-widest group-hover:translate-x-2 transition-transform">
-            Kiểm tra đường truyền <ArrowRight size={14} />
-          </div>
-        </div>
-      </div>
 
       {/* Favorites Section */}
       {favorites.length > 0 && (
@@ -1608,10 +1570,9 @@ function ExploreContent({
 function IndividualPlayer({ channel, isMuted, volume, isDark }: { channel: Channel, isMuted: boolean, volume: number, isDark: boolean }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<Hls | null>(null);
-  const isImageStream = channel.stream.match(/\.(png|jpg|jpeg|svg|gif|webp)/) || channel.stream.includes("Colorbars") || channel.name.includes("VTV6") || channel.status === "maintenance";
+  const isImageStream = channel.stream.match(/\.(png|jpg|jpeg|svg|gif|webp)/) || channel.stream.includes("Colorbars") || channel.status === "maintenance";
   const colorbarsUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/EBU_Colorbars_HD.svg/960px-EBU_Colorbars_HD.svg.png?_=20220810032923";
-  const v6TestcardUrl = "https://static.wikia.nocookie.net/ftv/images/2/28/Imageacknksdnjkvsdvjkbs.png/revision/latest?cb=20260530031557&path-prefix=vi";
-  const imageUrl = channel.name.includes("VTV6") ? v6TestcardUrl : (channel.status === "maintenance" ? colorbarsUrl : channel.stream);
+  const imageUrl = channel.status === "maintenance" ? colorbarsUrl : channel.stream;
 
   useEffect(() => {
     if (isImageStream) {
@@ -2000,6 +1961,7 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
         const matchesType = filterType === "Tất cả" 
           || (filterType === "Hoạt động" && ch.status !== "maintenance")
           || (filterType === "Bảo trì" && ch.status === "maintenance")
+          || (filterType === "Thử nghiệm" && ch.name === "VTV6")
           || (filterType === "Thiết yếu" && (ch.name === "VTV1" || ch.name === "VTV5" || ch.name === "Vietnam Today" || ch.name.includes("ANTV") || ch.name.includes("QPVN")))
           || (filterType === "VTV" && ["VTV1", "VTV2", "VTV3", "VTV4", "VTV5", "VTV6", "VTV7", "VTV8", "VTV9", "VTV Cần Thơ", "Vietnam Today"].includes(ch.name))
           || (filterType === "VTVcab" && ch.name.includes("ON"))
@@ -2020,13 +1982,16 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
       });
   }, [displayChannelsList, searchQuery, filterType, sortOrder]);
 
-  const LIVE_CATEGORIES = ["Thiết yếu", "VTV", "VTVcab", "HTV", "Các kênh địa phương"];
+  const LIVE_CATEGORIES = ["Thử nghiệm", "Thiết yếu", "VTV", "VTVcab", "HTV", "Các kênh địa phương"];
   const filteredCategories = useMemo(() => {
     if (liveSubTab === "custom") {
       const cats = Array.from(new Set(filteredChannels.map(c => c.category || "Kênh tự thêm")));
       return cats.length > 0 ? cats : ["Kênh tự thêm"];
     }
     return LIVE_CATEGORIES.filter(cat => {
+      if (cat === "Thử nghiệm") {
+        return filteredChannels.some(c => c.name === "VTV6");
+      }
       if (cat === "Thiết yếu") {
         return filteredChannels.some(c => 
           c.name === "VTV1" || 
@@ -2061,7 +2026,7 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
 
   // Play 1000Hz testcard tone beep for testcard/maintenance channels
   useEffect(() => {
-    const isTestcard = active.status === "maintenance" || active.stream.includes("Colorbars") || active.name.includes("VTV6");
+    const isTestcard = active.status === "maintenance" || active.stream.includes("Colorbars");
     
     if (!isTestcard || isMuted || volume === 0 || showSplash) {
       if (beepOscillatorRef.current) {
@@ -2136,7 +2101,7 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
     // Always try to reset mute when splash is gone
     setIsMuted(false);
 
-    const isImageStream = active.stream.match(/\.(png|jpg|jpeg|svg|gif|webp)/) || active.stream.includes("Colorbars") || active.name.includes("VTV6") || active.status === "maintenance";
+    const isImageStream = active.stream.match(/\.(png|jpg|jpeg|svg|gif|webp)/) || active.stream.includes("Colorbars") || active.status === "maintenance";
     if (isImageStream) {
       if (hlsRef.current) {
         hlsRef.current.destroy();
@@ -2466,9 +2431,9 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
       </LiquidModal>
 
       {/* MAIN WATCH AREA WITH SIDEBAR SCHEDULE */}
-      <div className={`w-full md:max-w-4xl lg:max-w-6xl xl:max-w-[1280px] mx-auto flex flex-col lg:block gap-4 md:gap-6 mb-4 md:mb-6 sticky top-14 z-30 transition-all duration-300 ${
-        isDark ? "bg-black/90 text-white" : "bg-[#f8fafc]/95 text-black"
-      } lg:pr-[344px] xl:pr-[389px] pt-2 pb-3.5 px-1.5`}>
+      <div className={`w-full md:max-w-4xl lg:max-w-6xl xl:max-w-[1280px] mx-auto flex flex-col lg:block gap-4 md:gap-6 mb-4 md:mb-6 sticky md:relative top-14 md:top-auto z-[120] md:z-10 transition-all duration-300 ${
+        isDark ? "bg-black/90 md:bg-transparent text-white" : "bg-[#f8fafc]/95 md:bg-transparent text-black"
+      } lg:pr-[344px] xl:pr-[389px] pt-2 pb-3.5 md:py-0 md:px-0 px-1.5`}>
         
         {/* VIDEO PLAYER */}
         <div 
@@ -2592,13 +2557,13 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
                   </div>
                 </motion.div>
               </div>
-            ) : (active.stream.match(/\.(png|jpg|jpeg|svg|gif|webp)/) || active.stream.includes("Colorbars") || active.name.includes("VTV6") || active.status === "maintenance") ? (
+            ) : (active.stream.match(/\.(png|jpg|jpeg|svg|gif|webp)/) || active.stream.includes("Colorbars") || active.status === "maintenance") ? (
               <div 
                 className="relative w-full h-full flex items-center justify-center bg-black select-none cursor-pointer"
                 onDoubleClick={toggleFullscreen}
               >
                 <img
-                  src={(active.name.includes("VTV6") || active.status === "maintenance" || active.stream.includes("Colorbars")) ? "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/EBU_Colorbars_HD.svg/960px-EBU_Colorbars_HD.svg.png?_=20220810032923" : active.stream}
+                  src={(active.status === "maintenance" || active.stream.includes("Colorbars")) ? "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/EBU_Colorbars_HD.svg/960px-EBU_Colorbars_HD.svg.png?_=20220810032923" : active.stream}
                   alt={active.name}
                   className="w-full h-full object-contain select-none"
                   referrerPolicy="no-referrer"
@@ -2670,6 +2635,11 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
                       </div>
                       <div className="space-y-0.5 md:space-y-1">
                         <h4 className="text-lg md:text-2xl font-bold tracking-tighter text-white uppercase">{active.name}</h4>
+                        {active.name.includes("VTV6") && (
+                          <p className="text-[10px] md:text-xs text-white/70 font-medium leading-relaxed max-w-sm">
+                            ❤️ Chân thành cảm ơn sự đóng góp của <strong className="font-bold text-[#4AC4FE]">Kênh chuyên về tư liệu</strong> trên Discord
+                          </p>
+                        )}
                         <div className="flex items-center gap-2 md:gap-3">
                           <span className="text-[8px] md:text-[10px] font-bold text-[#4AC4FE] uppercase tracking-widest bg-[#4AC4FE]/10 px-1.5 md:px-2 py-0.5 rounded-md border border-[#4AC4FE]/10">{active.category}</span>
                           <div className="flex items-center gap-1 text-[8px] md:text-[10px] text-white/50 font-bold uppercase tracking-widest">
@@ -3065,6 +3035,11 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
               )}
             </div>
           </div>
+          {active.name.includes("VTV6") && (
+            <p className={`text-xs md:text-sm font-medium leading-relaxed ${isDark ? "text-slate-400" : "text-slate-600"}`}>
+              ❤️ Chân thành cảm ơn sự đóng góp của <strong className="font-bold text-[#4AC4FE]">Kênh chuyên về tư liệu</strong> trên Discord
+            </p>
+          )}
         </div>
         
         <div className="flex items-center gap-2 md:gap-3">
@@ -3649,7 +3624,7 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
           <div className="flex flex-col md:flex-row gap-6 mb-8 w-full">
             {/* Desktop Filter Row */}
             <div className={`hidden md:flex gap-6 overflow-x-auto pb-3 md:pb-3 no-scrollbar flex-1 border-b ${isDark ? "border-white/10" : "border-slate-200"}`}>
-              {["Tất cả", "Thiết yếu", "VTV", "VTVcab", "HTV", "Các kênh địa phương"].map((type) => (
+              {["Tất cả", "Thử nghiệm", "Thiết yếu", "VTV", "VTVcab", "HTV", "Các kênh địa phương"].map((type) => (
                 <button
                   key={type}
                   onClick={() => setFilterType(type)}
@@ -3698,7 +3673,7 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
                         className={`absolute top-full left-0 right-0 mt-2 p-2 border shadow-2xl bg-slate-900 border-white/10 z-50 ${liquidGlass ? "rounded-2xl backdrop-blur-3xl" : "rounded-xl"}`}
                       >
-                        {["Tất cả", "Thiết yếu", "VTV", "VTVcab", "HTV", "Các kênh địa phương"].map((type) => (
+                        {["Tất cả", "Thử nghiệm", "Thiết yếu", "VTV", "VTVcab", "HTV", "Các kênh địa phương"].map((type) => (
                           <button
                             key={type}
                             onClick={() => {
@@ -3825,8 +3800,10 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
               {filteredCategories.map((cat, catIdx) => {
                 const playlistChannels = liveSubTab === "custom"
                   ? filteredChannels.filter(c => c.category === cat || (!c.category && cat === "Kênh tự thêm"))
-                  : (cat === "Thiết yếu" 
-                      ? filteredChannels.filter(c => c.name === "VTV1" || c.name === "VTV5" || c.name === "Vietnam Today" || c.name.includes("ANTV") || c.name.includes("QPVN"))
+                  : (cat === "Thử nghiệm"
+                      ? filteredChannels.filter(c => c.name === "VTV6")
+                      : cat === "Thiết yếu" 
+                          ? filteredChannels.filter(c => c.name === "VTV1" || c.name === "VTV5" || c.name === "Vietnam Today" || c.name.includes("ANTV") || c.name.includes("QPVN"))
                       : cat === "VTV"
                         ? filteredChannels.filter(c => ["VTV1", "VTV2", "VTV3", "VTV4", "VTV5", "VTV6", "VTV7", "VTV8", "VTV9", "VTV Cần Thơ", "Vietnam Today"].includes(c.name))
                         : cat === "VTVcab"
