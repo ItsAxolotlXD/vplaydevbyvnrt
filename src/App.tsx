@@ -105,9 +105,9 @@ const TornadoIcon = ({ className, size, strokeWidth }: { className?: string, siz
 
 const EXPERIMENTS = [
   {
-    id: "widgets_dashboard",
-    name: "Widgets Dashboard",
-    desc: "Enables brand-new widgets dashboard",
+    id: "low_latency_profile",
+    name: "Low Latency Profile",
+    desc: "Tối ưu hóa hiệu năng ứng dụng, giảm thời gian Splash screen và cải thiện tốc độ phản hồi.",
     stability: "stable"
   },
   {
@@ -121,12 +121,6 @@ const EXPERIMENTS = [
     name: "Picture in Picture",
     desc: "Hiển thị hình phát thu nhỏ của kênh đang xem khi chuyển sang trang khác hoặc cuộn xuống.",
     stability: "stable"
-  },
-  {
-    id: "settings_in_widgets",
-    name: "Settings in Widgets",
-    desc: "Moves the app settings into the Widgets Dashboard",
-    stability: "unstable"
   },
   {
     id: "screen_recording",
@@ -1717,6 +1711,7 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
   const [selectedDayOffset, setSelectedDayOffset] = useState<number>(0);
 
   const [liveSubTab, setLiveSubTab] = useState<"vplay" | "custom" | "url">(mode === "realm" ? "custom" : "vplay");
+  const [liveTabSection, setLiveTabSection] = useState<"channels" | "schedule">("channels");
 
   const parseM3U = (text: string): Channel[] => {
     const lines = text.split("\n");
@@ -2471,7 +2466,9 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
       </LiquidModal>
 
       {/* MAIN WATCH AREA WITH SIDEBAR SCHEDULE */}
-      <div className="w-full md:max-w-4xl lg:max-w-6xl xl:max-w-[1280px] mx-auto flex flex-col lg:block gap-4 md:gap-6 mb-4 md:mb-6 relative z-10 lg:pr-[344px] xl:pr-[389px]">
+      <div className={`w-full md:max-w-4xl lg:max-w-6xl xl:max-w-[1280px] mx-auto flex flex-col lg:block gap-4 md:gap-6 mb-4 md:mb-6 sticky top-14 z-30 transition-all duration-300 ${
+        isDark ? "bg-black/90 text-white" : "bg-[#f8fafc]/95 text-black"
+      } lg:pr-[344px] xl:pr-[389px] pt-2 pb-3.5 px-1.5`}>
         
         {/* VIDEO PLAYER */}
         <div 
@@ -3500,9 +3497,155 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
         </div>
       )}
 
+      {/* 2 SMALL TABS IN THE LIVE TAB: CHUYỂN KÊNH & LỊCH PHÁT SÓNG */}
+      {mode === "live" && (
+        <div className="flex justify-center mt-6 mb-2">
+          <div className={`p-1 rounded-[20px] border flex gap-1 ${
+            isDark ? "bg-[#11131c]/40 border-white/5" : "bg-slate-100 border-slate-200"
+          }`}>
+            <button
+              onClick={() => setLiveTabSection("channels")}
+              className={`px-5 py-2 rounded-[16px] text-xs font-black tracking-wide uppercase transition-all flex items-center gap-1.5 ${
+                liveTabSection === "channels"
+                  ? (isDark ? "bg-[#4AC4FE] text-slate-950 shadow-lg" : "bg-white text-slate-950 shadow-sm")
+                  : (isDark ? "text-slate-400 hover:text-white" : "text-slate-600 hover:text-slate-900")
+              }`}
+            >
+              <Radio className="w-3.5 h-3.5" />
+              Chuyển kênh
+            </button>
+            <button
+              onClick={() => setLiveTabSection("schedule")}
+              className={`px-5 py-2 rounded-[16px] text-xs font-black tracking-wide uppercase transition-all flex items-center gap-1.5 ${
+                liveTabSection === "schedule"
+                  ? (isDark ? "bg-[#4AC4FE] text-slate-950 shadow-lg" : "bg-white text-slate-950 shadow-sm")
+                  : (isDark ? "text-slate-400 hover:text-white" : "text-slate-600 hover:text-slate-900")
+              }`}
+            >
+              <Calendar className="w-3.5 h-3.5" />
+              Lịch phát sóng
+            </button>
+          </div>
+        </div>
+      )}
+
+      {mode === "live" && liveTabSection === "schedule" && (
+        <div className={`mt-6 w-full p-4 md:p-6 border shadow-xl rounded-2xl ${
+          isDark 
+            ? "bg-[#11131c]/60 border-slate-800 text-white backdrop-blur-md" 
+            : "bg-white border-slate-200 text-slate-900 shadow-xl"
+        }`}>
+          {/* Header */}
+          <div className="flex items-center justify-between pb-3 mb-4 border-b border-white/10">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-lg bg-[#4AC4FE]/10 text-[#4AC4FE]">
+                <Calendar size={16} />
+              </div>
+              <span className="text-xs md:text-sm font-black uppercase tracking-wider">Lịch Phát Sóng Kênh {active.name}</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+              <span className="text-[9px] font-mono font-bold uppercase tracking-widest opacity-60">
+                {selectedDayOffset === 0 ? "Hôm nay" : selectedDayOffset < 0 ? `${-selectedDayOffset} ngày trước` : `${selectedDayOffset} ngày sau`}
+              </span>
+            </div>
+          </div>
+
+          {/* Day Selector */}
+          <div className="flex gap-1 overflow-x-auto no-scrollbar py-1 shrink-0 mb-4 border-b border-slate-500/10">
+            {dayOptions.map((opt) => {
+              const isSelected = selectedDayOffset === opt.offset;
+              return (
+                <button
+                  key={`day-opt-tab-${opt.offset}`}
+                  onClick={() => setSelectedDayOffset(opt.offset)}
+                  className={`flex flex-col items-center justify-center px-3 py-1.5 min-w-[50px] rounded-xl transition-all text-center select-none shrink-0 ${
+                    isSelected
+                      ? "bg-[#4AC4FE] text-slate-950 font-bold"
+                      : isDark
+                        ? "bg-white/5 text-white/50 hover:bg-white/10 hover:text-white"
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  }`}
+                >
+                  <span className="text-[10px] font-bold tracking-tight whitespace-nowrap">{opt.label}</span>
+                  <span className={`text-[8px] font-medium opacity-75 ${isSelected ? "text-slate-900/80" : "text-slate-400"}`}>{opt.desc}</span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Schedule List Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+            {selectedDayOffset < 0 ? (
+              <div className="col-span-full py-12 text-center space-y-3 opacity-60">
+                <div className="inline-flex p-3 bg-red-500/10 rounded-full text-red-500">
+                  <Calendar size={24} />
+                </div>
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-wider text-red-500">Đã hết hạn xem</p>
+                  <p className="text-xs text-slate-400 mt-1">Lịch phát sóng đã hết thời hạn xem lại</p>
+                </div>
+              </div>
+            ) : selectedDayOffset > 0 ? (
+              <div className="col-span-full py-12 text-center space-y-3 opacity-60">
+                <div className="inline-flex p-3 bg-amber-500/10 rounded-full text-amber-500">
+                  <Calendar size={24} />
+                </div>
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-wider text-amber-500">Chưa cập nhật</p>
+                  <p className="text-xs text-slate-400 mt-1">Lịch phát sóng chưa được cập nhật</p>
+                </div>
+              </div>
+            ) : (
+              scheduleItems.map((item) => {
+                const isActive = item.hour === currentHour;
+                return (
+                  <div
+                    key={`schedule-tab-${item.hour}`}
+                    className={`flex items-start gap-4 p-3.5 rounded-xl transition-all duration-300 border ${
+                      isActive 
+                        ? (isDark 
+                            ? "bg-gradient-to-r from-[#4AC4FE]/20 to-transparent border-[#4AC4FE]/30 text-white shadow-md shadow-[#4AC4FE]/5"
+                            : "bg-gradient-to-r from-[#4AC4FE]/10 to-transparent border-[#4AC4FE]/20 text-[#0c4a6e] shadow-sm")
+                        : (isDark 
+                            ? "bg-white/[0.02] border-transparent text-white/70 hover:text-white hover:bg-white/[0.05]"
+                            : "bg-slate-50 border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100")
+                    }`}
+                  >
+                    {/* Time Badge */}
+                    <div className={`font-mono text-xs font-bold px-2.5 py-1 rounded-lg shrink-0 ${
+                      isActive 
+                        ? "bg-[#4AC4FE] text-black shadow-sm"
+                        : (isDark ? "bg-white/5 text-white/50" : "bg-slate-200/60 text-slate-500")
+                    }`}>
+                      {item.time}
+                    </div>
+
+                    {/* Program Title */}
+                    <div className="flex-1 space-y-0.5 min-w-0 text-left">
+                      <p className={`text-xs leading-snug font-black uppercase tracking-tight truncate ${
+                        isActive ? "text-[#4AC4FE]" : ""
+                      }`}>
+                        {item.title}
+                      </p>
+                      {isActive && (
+                        <div className="flex items-center gap-1">
+                          <span className="text-[8px] font-bold text-red-500 uppercase tracking-widest animate-pulse">• ĐANG PHÁT TRỰC TIẾP</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+      )}
+
       {/* FILTERS */}
-      <div className="mt-8 md:mt-12">
-        {liveSubTab === "vplay" && (
+      {liveTabSection === "channels" && (
+        <div className="mt-8 md:mt-12">
+          {liveSubTab === "vplay" && (
           <div className="flex flex-col md:flex-row gap-6 mb-8 w-full">
             {/* Desktop Filter Row */}
             <div className={`hidden md:flex gap-6 overflow-x-auto pb-3 md:pb-3 no-scrollbar flex-1 border-b ${isDark ? "border-white/10" : "border-slate-200"}`}>
@@ -3792,6 +3935,7 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
           ) : null}
         </div>
       </div>
+      )}
 
       {/* Mobile Schedule Drawer/Modal */}
       <AnimatePresence>
@@ -4981,7 +5125,6 @@ function RejuvenatedSettings(props: any) {
     { id: "Sidebar", name: "Sidebar", icon: Columns, keywords: ["sidebar", "phải", "trái", "co gọn", "compact", "quick access", "truy cập nhanh", "vị trí", "thanh bên"] },
     { id: "Floatbar", name: "Floatbar", icon: GlassWater, keywords: ["floatbar", "liquid glass", "kính", "glassy", "tinted", "mờ", "trong suốt", "hiệu ứng"] },
     { id: "Experiments", name: "Tính năng thử nghiệm", icon: Pizza, keywords: ["multiview", "quay màn hình", "pip", "thử nghiệm", "widgets", "dashboard", "widget", "phòng thí nghiệm", "labs", "experimental"] },
-    { id: "WidgetsBoard", name: "Cài đặt Widgets board", icon: LayoutGrid, keywords: ["widgets", "board", "bảng tiện ích", "ẩn sidebar", "toàn màn hình", "vị trí board", "thử nghiệm", "experimental", "labs"] },
   ];
 
   // Use internal state if props are not provided
@@ -5515,52 +5658,16 @@ function RejuvenatedSettings(props: any) {
       case "Experiments": {
         const showExp = shouldShowSetting("Tính năng thử nghiệm Canary", "Trải nghiệm các tính năng thử nghiệm mới nhất trên hệ thống Vplay Canary", ["experimental", "thử nghiệm", "labs", "phòng thí nghiệm", "widgets", "dashboard", "activate"]);
         if (!showExp) return null;
-        if (!featureFlags.widgets_dashboard) {
-          return (
-            <div className="space-y-6">
-              <div className={`p-12 rounded-[48px] border flex flex-col items-center text-center space-y-8 ${isDark ? "bg-amber-500/10 border-white/5 shadow-2xl shadow-amber-500/5" : "bg-amber-100 border-amber-200 shadow-sm"}`}>
-                  <div className={`w-28 h-28 rounded-full flex items-center justify-center ${isDark ? "bg-amber-500/20 text-amber-400" : "bg-white text-amber-600 shadow-sm"}`}>
-                      <AlertCircle size={56} />
-                  </div>
-                  <div className="space-y-4">
-                      <h3 className={`text-4xl font-bold tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>Experimental Features</h3>
-                      <p className={`text-lg opacity-60 font-medium leading-relaxed max-w-lg ${isDark ? "text-white" : "text-slate-900"}`}>
-                          Experimental Features đã được di chuyển vào Widgets Dashboard. Để trải nghiệm các tính năng thử nghiệm mới nhất trên Vplay, vui lòng kích hoạt tính năng "Widgets Dashboard" dưới đây
-                      </p>
-                  </div>
-                  <button 
-                    onClick={() => setFeatureFlags((prev: any) => ({ ...prev, widgets_dashboard: true }))}
-                    className="w-full btn-vibrant-3d py-5 !rounded-[32px] font-bold tracking-widest text-sm shadow-2xl"
-                  >
-                      Activate Widgets Dashboard
-                  </button>
-              </div>
-            </div>
-          );
-        }
         return (
-          <div className="space-y-6">
-            <div className={`p-12 rounded-[48px] border flex flex-col items-center text-center space-y-8 ${isDark ? "bg-[#4AC4FE]/10 border-white/5 shadow-2xl shadow-none" : "bg-[#4AC4FE]/10 border-[#4AC4FE]/10 shadow-sm"}`}>
-                <div className={`w-28 h-28 rounded-full flex items-center justify-center ${isDark ? "bg-[#4AC4FE]/20 text-[#4AC4FE]" : "bg-[#4AC4FE]/10 text-[#4AC4FE]"}`}>
-                    <Flask size={56} />
-                </div>
-                <div className="space-y-4">
-                    <h3 className={`text-4xl font-bold tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>Experimental Features</h3>
-                    <p className={`text-lg opacity-50 font-medium leading-relaxed max-w-lg ${isDark ? "text-white" : "text-slate-900"}`}>
-                        Trải nghiệm các tính năng thử nghiệm mới nhất trên hệ thống Vplay Canary. Cẩn thận: các tính năng này có thể thay đổi hoặc biến mất bất cứ lúc nào.
-                    </p>
-                </div>
-                <button 
-                  onClick={() => {
-                    if (setIsWidgetsOpen) setIsWidgetsOpen(true);
-                    if (setActiveDashboardTab) setActiveDashboardTab("labs");
-                    if (setIsWidgetsOpen) setIsWidgetsOpen(true);
-                  }}
-                  className="w-full btn-vibrant-3d py-5 !rounded-[32px] font-bold tracking-widest text-sm shadow-2xl"
-                >
-                    MỞ PHÒNG THÍ NGHIỆM TIẾN HÓA
-                </button>
-            </div>
+          <div className="space-y-6 text-left origin-top animate-in fade-in duration-300">
+            <ExperimentalContent 
+              isDark={isDark} 
+              featureFlags={featureFlags} 
+              setFeatureFlags={setFeatureFlags} 
+              liquidGlass={liquidGlass} 
+              loadingTreatment={loadingTreatment}
+              setLoadingTreatment={setLoadingTreatment}
+            />
           </div>
         );
       }
@@ -11697,105 +11804,9 @@ const [headingBar, setHeadingBar] = useState(() => {
 
   return (
     <MotionConfig 
-      transition={featureFlags.disable_animation ? { duration: 0 } : undefined}
+      transition={featureFlags.disable_animation ? { duration: 0 } : (featureFlags.low_latency_profile ? { duration: 0.15, ease: "easeOut" } : undefined)}
       reducedMotion={featureFlags.disable_animation ? "always" : "user"}
     >
-      <WidgetsDashboard 
-        isOpen={isWidgetsOpen} 
-        onClose={() => setIsWidgetsOpen(false)} 
-        isDark={isDark} 
-        weather={weather}
-        getTempDisplay={getTempDisplay}
-        currentTime={currentTime}
-        formatTime={formatTime}
-        formatDateString={formatDateString}
-        activeChannel={activeChannel}
-        setActiveChannel={setActiveChannel}
-        setActiveTab={setActiveTab}
-        user={user}
-        userData={userData}
-        featureFlags={featureFlags}
-        setFeatureFlags={setFeatureFlags}
-        loadingTreatment={loadingTreatment}
-        setLoadingTreatment={setLoadingTreatment}
-        isDev={isDev}
-        setIsDev={setIsDev}
-        liquidGlass={liquidGlass}
-        setLiquidGlass={setLiquidGlass}
-        onOpenUserMenu={() => setIsUserMenuOpen(true)}
-        activeDashboardTab={activeDashboardTab}
-        setActiveDashboardTab={setActiveDashboardTab}
-        setIsDark={setIsDark}
-        setIsReinstalling={setIsReinstalling}
-        setShowSplash={setShowSplash}
-        setSplashDuration={setSplashDuration}
-        useSidebar={useSidebar}
-        setUseSidebar={setUseSidebar}
-        isSidebarRight={isSidebarRight}
-        setIsSidebarRight={setIsSidebarRight}
-        isSidebarLocked={isSidebarLocked}
-        setIsSidebarLocked={setIsSidebarLocked}
-        sidebarDisplay={sidebarDisplay}
-        setSidebarDisplay={setSidebarDisplay}
-        isPinningEnabled={isPinningEnabled}
-        setIsPinningEnabled={setIsPinningEnabled}
-        setUserData={setUserData}
-        onAlert={onAlert}
-        handleLogin={handleLogin}
-        handleResetOnboarding={handleResetOnboarding}
-        favorites={favorites}
-        bypassed={bypassed}
-        tempUnit={tempUnit}
-        setTempUnit={setTempUnit}
-        location={location}
-        setLocation={setLocation}
-        timeFormat={timeFormat}
-        setTimeFormat={setTimeFormat}
-        clockFormat={clockFormat}
-        setClockFormat={setClockFormat}
-        dateFormat={dateFormat}
-        setDateFormat={setDateFormat}
-        showClock={showClock}
-        setShowClock={setShowClock}
-        showDate={showDate}
-        setShowDate={setShowDate}
-        showTempInClock={showTempInClock}
-        setShowTempInClock={setShowTempInClock}
-        headingBar={headingBar}
-        setHeadingBar={setHeadingBar}
-        isSearchCompact={isSearchCompact}
-        setIsSearchCompact={setIsSearchCompact}
-        handleLogout={handleLogout}
-        customColors={customColors}
-        setCustomColors={setCustomColors}
-        setShowGeoPopup={setShowGeoPopup}
-        handleGeolocation={handleGeolocation}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        isCompactMode={isCompactMode}
-        setIsCompactMode={setIsCompactMode}
-        isTouchInterface={isTouchInterface}
-        setIsTouchInterface={setIsTouchInterface}
-        sidebarQuickAccess={sidebarQuickAccess}
-        setSidebarQuickAccess={setSidebarQuickAccess}
-        topbarSearchType={topbarSearchType}
-        setTopbarSearchType={setTopbarSearchType}
-        locationDetection={locationDetection}
-        setLocationDetection={setLocationDetection}
-        timeZone={timeZone}
-        setTimeZone={setTimeZone}
-        onCloseDashboard={() => setIsWidgetsOpen(false)}
-        widgetsBoardPosition={widgetsBoardPosition}
-        setWidgetsBoardPosition={setWidgetsBoardPosition}
-        hideSidebarInWidgets={hideSidebarInWidgets}
-        setHideSidebarInWidgets={setHideSidebarInWidgets}
-        fullScreenWidgets={fullScreenWidgets}
-        setFullScreenWidgets={setFullScreenWidgets}
-        frostedGlassWidgets={frostedGlassWidgets}
-        setFrostedGlassWidgets={setFrostedGlassWidgets}
-        colorWidgets={colorWidgets}
-        setColorWidgets={setColorWidgets}
-      />
       <AnimatePresence>
         {isVTV6DialogOpen && (
           <LiquidModal 
@@ -11844,7 +11855,7 @@ const [headingBar, setHeadingBar] = useState(() => {
       </AnimatePresence>
       <div className={`${
         isDark 
-          ? "dark bg-[#11131c] text-white" 
+          ? "dark bg-black text-white" 
           : "bg-[#f8fafc] text-black"
       } h-screen flex font-sans transition-all duration-500 overflow-hidden ${useSidebar ? "flex-row" : "flex-col"} ${featureFlags.disable_animation ? "reduce-animations" : ""}`}
       onContextMenu={handleGlobalContextMenu}
@@ -11913,7 +11924,7 @@ const [headingBar, setHeadingBar] = useState(() => {
             <SplashScreen 
               isDark={isDark} 
               onEnter={handleEnterApp} 
-              duration={splashDuration} 
+              duration={featureFlags.low_latency_profile ? 500 : splashDuration} 
               isReinstalling={isReinstalling}
               onReinstallComplete={() => {
                 localStorage.clear();
@@ -13383,7 +13394,7 @@ const [headingBar, setHeadingBar] = useState(() => {
                       </AnimatePresence>
 
                       <div className="flex-1 flex items-center justify-center">
-                        <div className={`relative flex items-center gap-2.5 px-3.5 py-1.5 h-10 w-full group rounded-2xl overflow-hidden transition-all ${
+                        <div className={`relative flex items-center gap-2 px-3 py-1.5 h-10 w-full group rounded-2xl overflow-hidden transition-all ${
                           liquidGlass === "glassy"
                             ? "bg-white/10 text-white" 
                             : isDark 
@@ -13395,7 +13406,21 @@ const [headingBar, setHeadingBar] = useState(() => {
                           }`} />
                           <input
                             type="text"
-                            placeholder="Tìm kiếm kênh..."
+                            placeholder={
+                              isListening 
+                                ? "Đang nghe... Hãy nói đi" 
+                                : isListeningFailed 
+                                  ? "Gặp lỗi, chạm để thử lại"
+                                  : activeTab === "Trang chủ" 
+                                    ? "Tìm ở Trang chủ..." 
+                                    : activeTab === "Live" 
+                                      ? "Tìm kênh Live..." 
+                                      : activeTab === "Khám phá" 
+                                        ? "Khám phá nội dung..." 
+                                        : activeTab === "Cài đặt" 
+                                          ? "Tìm cài đặt..." 
+                                          : "Tìm kiếm ..."
+                            }
                             value={searchQuery}
                             onFocus={() => setIsSearchFocused(true)}
                             onBlur={() => setTimeout(() => setIsSearchFocused(false), 250)}
@@ -13404,6 +13429,17 @@ const [headingBar, setHeadingBar] = useState(() => {
                               liquidGlass === "glassy" ? "text-white placeholder-white/40" : isDark ? "text-white placeholder-slate-500" : "text-slate-900 placeholder-black/40"
                             }`}
                           />
+                          <button
+                            onClick={handleStartListening}
+                            className={`p-1 rounded-full transition-all shrink-0 ${
+                              isListening 
+                                ? "text-red-500 animate-pulse bg-red-500/15" 
+                                : (isDark ? "text-white/40 hover:text-white/80 animate-in fade-in" : "text-slate-400 hover:text-slate-800 animate-in fade-in")
+                            }`}
+                            title="Tìm bằng giọng nói"
+                          >
+                            <Mic size={14} className={isListening ? "fill-red-500" : ""} />
+                          </button>
                           <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-[90%] transition-all duration-300 ${
                             liquidGlass === "glassy" ? "bg-white/20" : isDark ? "bg-white/5" : "bg-black/5"
                           } ${isSearchFocused ? "bg-[#4AC4FE]" : ""}`} />
@@ -13521,32 +13557,34 @@ const [headingBar, setHeadingBar] = useState(() => {
         />
       )}
 
-      {/* Floating Notification Toasts in the top right corner */}
-      <div className="fixed top-24 right-6 z-[9999] flex flex-col gap-3 w-80 max-w-[calc(100vw-3rem)] pointer-events-none">
+      {/* Floating Notification Toasts at the bottom of the screen */}
+      <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[9999] flex flex-col gap-2 w-72 max-w-[calc(100vw-2rem)] pointer-events-none">
         <AnimatePresence>
           {toasts.map((toast) => (
             <motion.div
               key={toast.id}
-              initial={{ opacity: 0, y: -20, x: 20, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, x: 0, scale: 1 }}
-              exit={{ opacity: 0, x: 100, scale: 0.9, transition: { duration: 0.15 } }}
+              initial={{ opacity: 0, y: 15, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.9, transition: { duration: 0.12 } }}
               layout
-              className="pointer-events-auto p-4 rounded-xl border flex items-center gap-3 shadow-2xl backdrop-blur-md bg-slate-900/90 border-white/10 text-white"
+              className="pointer-events-auto px-4 py-2 rounded-full border flex items-center justify-between gap-2.5 shadow-xl backdrop-blur-md bg-slate-900/90 border-white/10 text-white"
             >
-              <div className="shrink-0">
-                {toast.type === "success" && <CheckCircle2 className="w-5 h-5 text-emerald-400" />}
-                {toast.type === "error" && <AlertCircle className="w-5 h-5 text-red-400" />}
-                {toast.type === "warning" && <Info className="w-5 h-5 text-amber-400" />}
-                {toast.type === "info" && <Info className="w-5 h-5 text-sky-400" />}
-              </div>
-              <div className="flex-1 text-[11px] font-bold leading-relaxed tracking-wide">
-                {toast.message}
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="shrink-0">
+                  {toast.type === "success" && <CheckCircle2 className="w-4 h-4 text-emerald-400" />}
+                  {toast.type === "error" && <AlertCircle className="w-4 h-4 text-red-400" />}
+                  {toast.type === "warning" && <Info className="w-4 h-4 text-amber-400" />}
+                  {toast.type === "info" && <Info className="w-4 h-4 text-sky-400" />}
+                </div>
+                <div className="flex-1 text-[10px] font-black leading-snug tracking-wider uppercase truncate max-w-[180px]">
+                  {toast.message}
+                </div>
               </div>
               <button
                 onClick={() => setToasts(prev => prev.filter(t => t.id !== toast.id))}
-                className="shrink-0 p-1 hover:bg-white/5 rounded-lg transition-colors"
+                className="shrink-0 p-1 hover:bg-white/10 rounded-full transition-colors"
               >
-                <X className="w-4 h-4 opacity-70 hover:opacity-100" />
+                <X className="w-3.5 h-3.5 opacity-60 hover:opacity-100" />
               </button>
             </motion.div>
           ))}
