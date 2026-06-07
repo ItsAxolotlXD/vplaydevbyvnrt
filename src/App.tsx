@@ -528,13 +528,16 @@ function ChannelLogo({ src, alt, className, isDark, liquidGlass, status, categor
       : "https://static.wikia.nocookie.net/ftv/images/7/7f/Vtd.png/revision/latest/scale-to-width-down/1000?cb=20260601094859&path-prefix=vi";
   }
 
+  const isVTV = category === "VTV" || alt.includes("VTV");
   const isVTVcab = category === "VTVcab" || alt.includes("ON");
   const isShrunk = alt.includes("THVL") || alt.includes("Vĩnh Long") || alt.includes("QNgTV") || alt.includes("Quảng Ngãi");
   const scaleClass = isVTVcab 
     ? "scale-[1.1]" 
-    : isShrunk 
-      ? "scale-[1.0]" 
-      : "scale-[1.35]";
+    : isVTV
+      ? "scale-[1.12]"
+      : isShrunk 
+        ? "scale-[1.0]" 
+        : "scale-[1.35]";
 
   const isVTV5_TN = alt === "VTV5 Tây Nguyên";
   const isVTV5_TNB = alt === "VTV5 Tây Nam Bộ";
@@ -636,15 +639,15 @@ const ChannelCard = React.memo(function ChannelCard({ ch, onClick, isDark, isAct
       }}
       className={`relative group ${className || ""}`}
     >
-      {/* Background glow when active or hover */}
-      <div className={`absolute -inset-1 rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition-none z-0 ${isActive ? "bg-[#4AC4FE]/10 opacity-100" : isDark ? "bg-white/2" : "bg-slate-500/5"}`} />
+      {/* Background glow when hover (no glow for active) */}
+      <div className={`absolute -inset-1 rounded-2xl blur-lg opacity-0 group-hover:opacity-100 transition-none z-0 ${isDark ? "bg-white/2" : "bg-slate-500/5"}`} />
       
       <motion.button
         whileTap={{ scale: 0.98 }}
         onClick={onClick}
         className={`w-full ${isLiveTab ? "aspect-[1.5/1]" : "aspect-square"} p-2.5 xs:p-3 sm:p-5 flex items-center justify-center relative overflow-hidden transition-none z-10 rounded-2xl border-[3px] ${
           isActive
-            ? "border-[#4AC4FE] shadow-lg shadow-[#4AC4FE]/40 scale-[1.03]"
+            ? `border-[#4AC4FE] ${isDark ? "bg-[#202023]" : "bg-white"}`
             : isDark
               ? "border-white/5 bg-[#202023] hover:brightness-110 group-hover:border-white"
               : "border-[#e2e8f0] bg-white hover:brightness-105 group-hover:border-white"
@@ -1636,7 +1639,7 @@ function IndividualPlayer({ channel, isMuted, volume, isDark }: { channel: Chann
   );
 }
 
-function TVContent({ key, mode = "live", active, setActive, isDark, favorites, toggleFavorite, user, onLogin, isDev, liquidGlass, sortOrder, setSortOrder, showSplash, featureFlags, searchQuery, bypassed, setIsPlayerInView, loadingTreatment, currentTime, onChannelContextMenu, pinnedChannels, togglePinChannel }: { 
+function TVContent({ key, mode = "live", active, setActive, isDark, favorites, toggleFavorite, user, onLogin, isDev, liquidGlass, sortOrder, setSortOrder, showSplash, featureFlags, searchQuery, bypassed, setIsPlayerInView, loadingTreatment, currentTime, onChannelContextMenu, pinnedChannels, togglePinChannel, isTopBarVisible = true }: { 
   key?: string,
   mode?: "live" | "realm",
   active: Channel, 
@@ -1659,7 +1662,8 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
   currentTime: Date,
   onChannelContextMenu: (e: React.MouseEvent, ch: Channel) => void,
   pinnedChannels: Channel[],
-  togglePinChannel: (ch: Channel) => void
+  togglePinChannel: (ch: Channel) => void,
+  isTopBarVisible?: boolean
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -2365,7 +2369,7 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
   );
 
   return (
-    <div className="flex-1 p-2 md:p-6 w-full max-w-[1600px] 2xl:max-w-[1800px] mx-auto px-4 md:px-12 overflow-x-hidden">
+    <div className="flex-1 p-0 md:p-6 w-full max-w-[1600px] 2xl:max-w-[1800px] mx-auto px-0 md:px-12 overflow-x-hidden">
       {/* Liquid Modal for Channel Selection */}
       <LiquidModal
         isOpen={!!showChannelSelector}
@@ -2431,18 +2435,18 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
       </LiquidModal>
 
       {/* MAIN WATCH AREA WITH SIDEBAR SCHEDULE */}
-      <div className={`w-full md:max-w-4xl lg:max-w-6xl xl:max-w-[1280px] mx-auto flex flex-col lg:block gap-4 md:gap-6 mb-4 md:mb-6 sticky md:relative top-14 md:top-auto z-[120] md:z-10 transition-all duration-300 ${
-        isDark ? "bg-black/90 md:bg-transparent text-white" : "bg-[#f8fafc]/95 md:bg-transparent text-black"
-      } lg:pr-[344px] xl:pr-[389px] pt-2 pb-3.5 md:py-0 md:px-0 px-1.5`}>
+      <div className={`w-full md:max-w-4xl lg:max-w-6xl xl:max-w-[1280px] mx-auto flex flex-col lg:block gap-4 md:gap-6 mb-4 md:mb-6 sticky md:relative ${isTopBarVisible ? "top-14" : "top-0"} md:top-auto z-[120] md:z-10 transition-all duration-300 ${
+        isDark ? "bg-vplay-background md:bg-transparent text-white" : "bg-white md:bg-transparent text-black"
+      } lg:pr-[344px] xl:pr-[389px] pt-0 pb-0 md:py-0 md:px-0 px-0`}>
         
         {/* VIDEO PLAYER */}
         <div 
           ref={containerRef}
-          className={`bg-black flex items-center justify-center border shadow-2xl relative overflow-hidden group w-full ${
+          className={`bg-black flex items-center justify-center border-y md:border shadow-2xl relative overflow-hidden group w-full ${
             isMultiview ? "aspect-auto min-h-[300px] md:min-h-[400px]" : "aspect-video"
           } ${
-            liquidGlass ? "rounded-xl md:rounded-2xl" : "rounded-lg"
-          } ${isDark ? "border-slate-800" : "border-slate-300"}`}
+            liquidGlass ? "rounded-none md:rounded-2xl" : "rounded-none md:rounded-lg"
+          } ${isDark ? "border-slate-800/40 md:border-slate-800" : "border-slate-300"}`}
         >
         {!user && !isDev && !bypassed ? (
           <div className={`absolute inset-0 z-10 flex flex-col items-center justify-center bg-slate-900/40 p-6 text-center ${
@@ -2453,7 +2457,7 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
               animate={{ scale: 1, opacity: 1 }}
               className={`p-10 border shadow-2xl flex flex-col items-center space-y-6 ${
                 isDark 
-                  ? "bg-[#11131c]/85 border-white/10 text-white" 
+                  ? "bg-[#181818]/85 border-white/10 text-white" 
                   : "bg-white/80 border-black/5 text-slate-900 shadow-xl"
               } backdrop-blur-md ${
                 liquidGlass ? "rounded-[40px]" : "rounded-2xl"
@@ -2766,7 +2770,7 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
             liquidGlass ? "rounded-xl md:rounded-2xl" : "rounded-lg"
           } ${
             isDark 
-              ? "bg-[#11131c]/60 border-slate-800 text-white backdrop-blur-md" 
+              ? "bg-[#181818]/60 border-slate-800 text-white backdrop-blur-md" 
               : "bg-white/85 border-slate-200 text-slate-900 backdrop-blur-md shadow-xl"
           }`}
           style={{
@@ -3010,8 +3014,10 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
 
       </div>
 
-      {/* CHANNEL INFO */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-2 mt-4 md:mt-0 md:max-w-4xl lg:max-w-6xl xl:max-w-[1280px] mx-auto w-full">
+      {/* Scrollable grid, categories, playlists etc are padded on mobile to maintain beautiful spacing */}
+      <div className="px-4 md:px-0 mt-4">
+        {/* CHANNEL INFO */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-2 mt-4 md:mt-0 md:max-w-4xl lg:max-w-6xl xl:max-w-[1280px] mx-auto w-full">
         <div className="flex flex-col gap-1 md:gap-2">
           <div className="flex flex-wrap items-center gap-3 md:gap-4">
             <motion.h2 
@@ -3476,7 +3482,7 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
       {mode === "live" && (
         <div className="flex justify-center mt-6 mb-2">
           <div className={`p-1 rounded-[20px] border flex gap-1 ${
-            isDark ? "bg-[#11131c]/40 border-white/5" : "bg-slate-100 border-slate-200"
+            isDark ? "bg-[#181818]/40 border-white/5" : "bg-slate-100 border-slate-200"
           }`}>
             <button
               onClick={() => setLiveTabSection("channels")}
@@ -3507,7 +3513,7 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
       {mode === "live" && liveTabSection === "schedule" && (
         <div className={`mt-6 w-full p-4 md:p-6 border shadow-xl rounded-2xl ${
           isDark 
-            ? "bg-[#11131c]/60 border-slate-800 text-white backdrop-blur-md" 
+            ? "bg-[#181818]/60 border-slate-800 text-white backdrop-blur-md" 
             : "bg-white border-slate-200 text-slate-900 shadow-xl"
         }`}>
           {/* Header */}
@@ -3913,6 +3919,7 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
         </div>
       </div>
       )}
+      </div>
 
       {/* Mobile Schedule Drawer/Modal */}
       <AnimatePresence>
@@ -3935,7 +3942,7 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
               transition={{ type: "spring", damping: 25, stiffness: 250 }}
               className={`relative w-full max-h-[85vh] flex flex-col rounded-t-[32px] border-t overflow-hidden shadow-2xl p-5 ${
                 isDark 
-                  ? "bg-[#11131c]/95 border-white/10 text-white" 
+                  ? "bg-[#181818]/95 border-white/10 text-white" 
                   : "bg-white/95 border-slate-200 text-slate-900 shadow-2xl"
               } backdrop-blur-3xl`}
               style={{ paddingBottom: "env(safe-area-inset-bottom, 24px)" }}
@@ -7040,7 +7047,7 @@ function AuthModal({ isOpen, onClose, isDark, liquidGlass, setIsDev, setUserData
               transition={{ type: "spring", damping: 30, stiffness: 400 }}
               className={`relative w-full max-w-5xl max-h-[95vh] overflow-hidden shadow-[0_40px_100px_rgba(0,0,0,0.4)] flex flex-col md:flex-row min-h-[400px] md:min-h-[580px] rounded-[40px] md:rounded-[56px] ${
                 isDark 
-                  ? "bg-[#11131c]/95 border-white/10 text-white" 
+                  ? "bg-[#181818]/95 border-white/10 text-white" 
                   : "bg-white/95 border-white/40 text-slate-900"
               } backdrop-blur-[100px] border`}
             >
@@ -7892,7 +7899,7 @@ function TopBar({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 10, scale: 0.95 }}
               className={`absolute top-full left-1/2 -translate-x-1/2 mt-2 w-full max-w-lg rounded-2xl shadow-2xl border p-2 z-[200] ${
-                isDark ? "bg-[#11131c] border-white/10 text-white" : "bg-white border-slate-200 text-slate-900"
+                isDark ? "bg-[#181818] border-white/10 text-white" : "bg-white border-slate-200 text-slate-900"
               }`}
             >
               <div className="max-h-80 overflow-y-auto px-1 space-y-1 custom-scrollbar">
@@ -7997,7 +8004,7 @@ function SearchContextMenu({
       <div
         style={{ top: y, left: x }}
         className={`fixed z-[1001] w-56 rounded-2xl shadow-2xl border p-1.5 overflow-hidden backdrop-blur-xl ${
-          isDark ? "bg-[#11131c]/85 border-white/10 text-white" : "bg-white/85 border-slate-200 text-slate-900 shadow-xl"
+          isDark ? "bg-[#181818]/85 border-white/10 text-white" : "bg-white/85 border-slate-200 text-slate-900 shadow-xl"
         }`}
       >
         {menuItems.map((item) => {
@@ -8066,8 +8073,8 @@ function UnifiedContextMenu({
         style={{ top: y, left: x }}
         className={`fixed z-[1001] w-60 rounded-2xl shadow-2xl border p-1.5 overflow-hidden backdrop-blur-xl ${
           isDark 
-            ? "bg-[#11131c]/85 border-white/10 text-white shadow-[0_12px_40px_rgba(0,0,0,0.5)]" 
-            : "bg-white/85 border-slate-200 text-[#11131c] shadow-[0_12px_30px_rgba(15,23,42,0.15)]"
+            ? "bg-[#181818]/85 border-white/10 text-white shadow-[0_12px_40px_rgba(0,0,0,0.5)]" 
+            : "bg-white/85 border-slate-200 text-[#181818] shadow-[0_12px_30px_rgba(15,23,42,0.15)]"
         }`}
       >
         {/* Section 1: UI Layout */}
@@ -10266,7 +10273,7 @@ function WidgetsDashboard({
                 {contextMenu?.id && (
                   <div
                     className={`fixed z-[1002] w-48 border shadow-2xl rounded-2xl p-1.5 flex flex-col gap-0.5 backdrop-blur-xl ${
-                      isDark ? "bg-[#11131c]/85 border-white/10 text-white" : "bg-white/85 border-slate-200 text-slate-900 shadow-xl"
+                      isDark ? "bg-[#181818]/85 border-white/10 text-white" : "bg-white/85 border-slate-200 text-slate-900 shadow-xl"
                     }`}
                     style={{ left: contextMenu.x, top: contextMenu.y }}
                     onClick={(e) => e.stopPropagation()}
@@ -11121,20 +11128,20 @@ const [sidebarWidth, setSidebarWidth] = useState(() => {
         if (parsed.primary === "#a855f7" || !parsed.primary) {
           parsed.primary = "#4AC4FE";
         }
-        if (parsed.sidebar === "#1a0121" || parsed.sidebar === "#0a0f1d" || !parsed.sidebar) {
-          parsed.sidebar = "#11131c";
+        if (parsed.sidebar === "#11131c" || parsed.sidebar === "#1a0121" || parsed.sidebar === "#0a0f1d" || !parsed.sidebar) {
+          parsed.sidebar = "#181818";
         }
-        if (parsed.topbar === "#0a0118" || parsed.topbar === "#090d16" || !parsed.topbar) {
-          parsed.topbar = "#11131c";
+        if (parsed.topbar === "#11131c" || parsed.topbar === "#0a0118" || parsed.topbar === "#090d16" || !parsed.topbar) {
+          parsed.topbar = "#181818";
         }
         return parsed;
       } catch (e) {}
     }
     return {
       primary: "#4AC4FE",
-      sidebar: "#11131c",
+      sidebar: "#181818",
       background: "var(--color-vplay-background)",
-      topbar: "#11131c"
+      topbar: "#181818"
     };
   });
 
@@ -12098,7 +12105,7 @@ const [headingBar, setHeadingBar] = useState(() => {
               transition={{ type: "spring", damping: 25, stiffness: 250 }}
               className={`relative w-full max-h-[85vh] flex flex-col rounded-t-[32px] border-t overflow-hidden shadow-2xl p-6 z-20 ${
                 isDark 
-                  ? "bg-[#11131c] border-white/10 text-white" 
+                  ? "bg-[#181818] border-white/10 text-white" 
                   : "bg-white border-slate-200 text-slate-900 shadow-2xl"
               }`}
               style={{ paddingBottom: "env(safe-area-inset-bottom, 24px)" }}
@@ -12530,6 +12537,7 @@ const [headingBar, setHeadingBar] = useState(() => {
                   onChannelContextMenu={onChannelContextMenu}
                   pinnedChannels={pinnedChannels}
                   togglePinChannel={togglePinChannel}
+                  isTopBarVisible={isTopBarVisible}
                 />
               )}
               {displayTab === "Package" && (
@@ -12556,6 +12564,7 @@ const [headingBar, setHeadingBar] = useState(() => {
                   onChannelContextMenu={onChannelContextMenu}
                   pinnedChannels={pinnedChannels}
                   togglePinChannel={togglePinChannel}
+                  isTopBarVisible={isTopBarVisible}
                 />
               )}
               {displayTab === "Experiments" && (
@@ -13226,14 +13235,8 @@ const [headingBar, setHeadingBar] = useState(() => {
         >
           <motion.nav 
             key="bottom-nav-stable"
-            onTouchStart={handleNavTouchStart}
-            onTouchEnd={handleNavTouchEnd}
-            initial={{ scale: 0.96 }}
-            animate={{ scale: navBounce ? 0.94 : 1 }}
-            transition={{
-              scale: { type: "spring", stiffness: 900, damping: 18 },
-              default: { type: "spring", stiffness: 900, damping: 18 }
-            }}
+            initial={{ scale: 1 }}
+            animate={{ scale: 1 }}
             className={`flex-1 w-full flex items-center justify-between p-2 transition-all duration-500 overflow-hidden relative ${
               liquidGlass === "tinted"
                 ? `rounded-full border shadow-[0_20px_40px_rgba(0,0,0,0.15)] backdrop-blur-[100px] bg-white/80 border-white/80`
@@ -13297,19 +13300,32 @@ const [headingBar, setHeadingBar] = useState(() => {
                                   : isGlassy ? "text-white/70 hover:text-white" : liquidGlass === "tinted" ? "text-black hover:opacity-100 opacity-60" : isDark ? "text-slate-400 hover:text-white" : "text-black hover:opacity-100"
                               }`}
                             >
-                              {isActive && (
+                               {isActive && (
                                 <motion.div
                                   layoutId="activeTabUnderline"
-                                  className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-[3.5px] w-6 rounded-full z-10 ${
+                                  className={`absolute bottom-[-7px] left-1/2 -translate-x-1/2 h-[3.5px] w-6 rounded-full z-10 ${
                                     isLiveTab ? "bg-red-500 shadow-[0_2px_8px_rgba(239,68,68,0.4)]" : "bg-[#4AC4FE] shadow-[0_2px_8px_rgba(74,196,254,0.4)]"
                                   }`}
-                                  transition={{ type: "spring", bounce: 0.25, duration: 0.4 }}
+                                  transition={{ type: "spring", stiffness: 380, damping: 25, mass: 0.8 }}
                                 />
                               )}
                               <motion.div
-                                initial={{ scale: 1 }}
-                                animate={{ scale: isActive ? 1.1 : 1 }}
-                                whileTap={{ scale: 0.9 }}
+                                animate={isActive ? { scale: [0.75, 1.25, 1.15] } : { scale: 1 }}
+                                whileTap={{ scale: 0.75 }}
+                                transition={
+                                  isActive
+                                    ? {
+                                        type: "spring",
+                                        stiffness: 420,
+                                        damping: 12,
+                                        mass: 0.8
+                                      }
+                                    : {
+                                        type: "spring",
+                                        stiffness: 300,
+                                        damping: 20
+                                      }
+                                }
                                 className="z-10 relative"
                               >
                                 <Icon className="h-7 w-7 flex-shrink-0" />
