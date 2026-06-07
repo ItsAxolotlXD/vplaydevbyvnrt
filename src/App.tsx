@@ -692,19 +692,6 @@ const ChannelCard = React.memo(function ChannelCard({ ch, onClick, isDark, isAct
           </div>
         </div>
       </motion.button>
-      
-      <button 
-        onClick={(e) => { e.stopPropagation(); toggleFavorite(ch); }}
-        className={`absolute top-1.5 right-1.5 xs:top-2.5 xs:right-2.5 p-1 xs:p-1.5 rounded-full backdrop-blur-md opacity-80 sm:opacity-0 group-hover:opacity-100 transition-none hover:scale-110 z-20 ${
-          favorites.includes(ch.name) 
-            ? "text-white bg-[#4AC4FE] border border-[#4AC4FE] shadow-sm shadow-[#4AC4FE]/20" 
-            : isDark 
-              ? "text-white/60 bg-white/5 border border-white/10 hover:text-white" 
-              : "text-slate-600 bg-slate-100/80 border border-slate-200 hover:text-slate-900"
-        }`}
-      >
-        <LikeIcon size={12} className="xs:w-3.5 xs:h-3.5" filled={favorites.includes(ch.name)} />
-      </button>
     </div>
   );
 });
@@ -2435,7 +2422,7 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
       </LiquidModal>
 
       {/* MAIN WATCH AREA WITH SIDEBAR SCHEDULE */}
-      <div className={`w-full md:max-w-4xl lg:max-w-6xl xl:max-w-[1280px] mx-auto flex flex-col lg:block gap-4 md:gap-6 mb-4 md:mb-6 sticky md:relative ${isTopBarVisible ? "top-14" : "top-0"} md:top-auto z-[120] md:z-10 transition-all duration-300 ${
+      <div className={`w-full md:max-w-4xl lg:max-w-6xl xl:max-w-[1280px] mx-auto flex flex-col lg:block gap-4 md:gap-6 mb-4 md:mb-6 relative z-10 transition-all duration-300 ${
         isDark ? "bg-vplay-background md:bg-transparent text-white" : "bg-white md:bg-transparent text-black"
       } lg:pr-[344px] xl:pr-[389px] pt-0 pb-0 md:py-0 md:px-0 px-0`}>
         
@@ -13278,7 +13265,23 @@ const [headingBar, setHeadingBar] = useState(() => {
                         const tabId = tab.id || tab.name;
                         const isActive = activeTab === tabId;
                         const isGlassy = liquidGlass === "glassy";
-                        const isLiveTab = tabId === "Live";
+
+                        // Map tab colors individually
+                        let activeColorClass = "text-[#4AC4FE]";
+                        let activeUnderlineClass = "bg-[#4AC4FE] shadow-[0_2px_8px_rgba(74,196,254,0.4)]";
+
+                        if (tabId === "Live") {
+                          activeColorClass = "text-red-500";
+                          activeUnderlineClass = "bg-red-500 shadow-[0_2px_8px_rgba(239,68,68,0.4)]";
+                        } else if (tabId === "Package") {
+                          activeColorClass = "text-[#FACC15]";
+                          activeUnderlineClass = "bg-[#FACC15] shadow-[0_2px_8px_rgba(250,204,21,0.4)]";
+                        } else if (tabId === "Cài đặt") {
+                          activeColorClass = isDark ? "text-white" : "text-slate-900";
+                          activeUnderlineClass = isDark 
+                            ? "bg-white shadow-[0_2px_8px_rgba(255,255,255,0.4)]" 
+                            : "bg-slate-900 shadow-[0_2px_8px_rgba(15,23,42,0.4)]";
+                        }
 
                         return (
                           <div key={`mob-nav-${tabId}`} className="flex-1 flex justify-center">
@@ -13296,17 +13299,17 @@ const [headingBar, setHeadingBar] = useState(() => {
                               }}
                               className={`relative flex flex-col items-center justify-center px-1 py-1 transition-all duration-300 group z-10 w-full ${
                                 isActive 
-                                  ? (isLiveTab ? "text-red-500" : "text-[#4AC4FE]") 
+                                  ? activeColorClass
                                   : isGlassy ? "text-white/70 hover:text-white" : liquidGlass === "tinted" ? "text-black hover:opacity-100 opacity-60" : isDark ? "text-slate-400 hover:text-white" : "text-black hover:opacity-100"
                               }`}
                             >
                                {isActive && (
                                 <motion.div
                                   layoutId="activeTabUnderline"
-                                  className={`absolute bottom-[-7px] left-1/2 -translate-x-1/2 h-[3.5px] w-6 rounded-full z-10 ${
-                                    isLiveTab ? "bg-red-500 shadow-[0_2px_8px_rgba(239,68,68,0.4)]" : "bg-[#4AC4FE] shadow-[0_2px_8px_rgba(74,196,254,0.4)]"
+                                  className={`absolute bottom-[-7px] left-1/2 -translate-x-1/2 h-[5px] w-7 rounded-full z-10 ${
+                                    activeUnderlineClass
                                   }`}
-                                  transition={{ type: "spring", stiffness: 380, damping: 25, mass: 0.8 }}
+                                  transition={{ type: "tween", ease: "easeIn", duration: 0.55 }}
                                 />
                               )}
                               <motion.div
