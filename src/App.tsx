@@ -606,7 +606,7 @@ function ChannelLogo({ src, alt, className, isDark, liquidGlass, status, categor
   );
 }
 
-const ChannelCard = React.memo(function ChannelCard({ ch, onClick, isDark, isActive, favorites, toggleFavorite, liquidGlass, className, isLiveTab, onContextMenu }: {
+const ChannelCard = React.memo(function ChannelCard({ ch, onClick, isDark, isActive, favorites, toggleFavorite, liquidGlass, className, isLiveTab, onContextMenu, useNewDesign }: {
   ch: Channel,
   onClick: () => void,
   isDark: boolean,
@@ -617,7 +617,8 @@ const ChannelCard = React.memo(function ChannelCard({ ch, onClick, isDark, isAct
   className?: string,
   key?: string | number,
   isLiveTab?: boolean,
-  onContextMenu?: (e: React.MouseEvent, ch: Channel) => void
+  onContextMenu?: (e: React.MouseEvent, ch: Channel) => void,
+  useNewDesign?: boolean
 }) {
   const isMaintenance = ch.status === "maintenance";
   const isComingSoon = ch.status === "coming-soon";
@@ -645,12 +646,18 @@ const ChannelCard = React.memo(function ChannelCard({ ch, onClick, isDark, isAct
       <motion.button
         whileTap={{ scale: 0.98 }}
         onClick={onClick}
+        style={useNewDesign ? {
+          backgroundImage: `url("https://static.wikia.nocookie.net/ftv/images/3/36/GroindBACK.png/revision/latest/scale-to-width-down/1000?cb=20260607080437&path-prefix=vi")`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat"
+        } : undefined}
         className={`w-full ${isLiveTab ? "aspect-[1.5/1]" : "aspect-square"} p-2.5 xs:p-3 sm:p-5 flex items-center justify-center relative overflow-hidden transition-none z-10 rounded-2xl border-[3px] ${
           isActive
-            ? `border-[#4AC4FE] ${isDark ? "bg-[#202023]" : "bg-white"}`
+            ? `border-[#4AC4FE] ${useNewDesign ? "" : (isDark ? "bg-[#202023]" : "bg-white")}`
             : isDark
-              ? "border-white/5 bg-[#202023] hover:brightness-110 group-hover:border-white"
-              : "border-[#e2e8f0] bg-white hover:brightness-105 group-hover:border-white"
+              ? `border-white/5 ${useNewDesign ? "" : "bg-[#202023]"} hover:brightness-110 group-hover:border-white`
+              : `border-[#e2e8f0] ${useNewDesign ? "" : "bg-white"} hover:brightness-105 group-hover:border-white`
         }`}
       >
 
@@ -823,7 +830,8 @@ function HomeContent({
   paginate, 
   slides, 
   bypassed,
-  onChannelContextMenu
+  onChannelContextMenu,
+  useNewDesign
 }: {
   setActiveTab: (tab: string) => void,
   setActiveChannel: (ch: typeof channels[0]) => void,
@@ -838,7 +846,8 @@ function HomeContent({
   paginate: (newDirection: number) => void,
   slides: any[],
   bypassed?: boolean,
-  onChannelContextMenu?: (e: React.MouseEvent, ch: Channel) => void
+  onChannelContextMenu?: (e: React.MouseEvent, ch: Channel) => void,
+  useNewDesign?: boolean
 }) {
   const [randomChannels, setRandomChannels] = useState<typeof channels>([]);
   
@@ -1285,6 +1294,7 @@ function HomeContent({
                       toggleFavorite={toggleFavorite} 
                       liquidGlass={liquidGlass}
                       onContextMenu={onChannelContextMenu}
+                      useNewDesign={useNewDesign}
                     />
                     <div className={`mt-3 text-center text-xs font-bold truncate tracking-wide ${isDark ? "text-slate-350" : "text-slate-600"}`}>
                       {ch.name}
@@ -1319,6 +1329,7 @@ function HomeContent({
                     toggleFavorite={toggleFavorite} 
                     liquidGlass={liquidGlass}
                     onContextMenu={onChannelContextMenu}
+                    useNewDesign={useNewDesign}
                   />
                   <div className={`mt-2 text-center text-[11px] font-black truncate tracking-wide ${isDark ? "text-slate-400" : "text-slate-700"}`}>
                     {ch.name}
@@ -1397,6 +1408,7 @@ function HomeContent({
                 toggleFavorite={toggleFavorite} 
                 liquidGlass={liquidGlass}
                 onContextMenu={onChannelContextMenu}
+                useNewDesign={useNewDesign}
               />
             ))}
           </div>
@@ -1626,7 +1638,7 @@ function IndividualPlayer({ channel, isMuted, volume, isDark }: { channel: Chann
   );
 }
 
-function TVContent({ key, mode = "live", active, setActive, isDark, favorites, toggleFavorite, user, onLogin, isDev, liquidGlass, sortOrder, setSortOrder, showSplash, featureFlags, searchQuery, bypassed, setIsPlayerInView, loadingTreatment, currentTime, onChannelContextMenu, pinnedChannels, togglePinChannel, isTopBarVisible = true }: { 
+function TVContent({ key, mode = "live", active, setActive, isDark, favorites, toggleFavorite, user, onLogin, isDev, liquidGlass, sortOrder, setSortOrder, showSplash, featureFlags, searchQuery, bypassed, setIsPlayerInView, loadingTreatment, currentTime, onChannelContextMenu, pinnedChannels, togglePinChannel, isTopBarVisible = true, useNewDesign, setUseNewDesign }: { 
   key?: string,
   mode?: "live" | "realm",
   active: Channel, 
@@ -1650,7 +1662,9 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
   onChannelContextMenu: (e: React.MouseEvent, ch: Channel) => void,
   pinnedChannels: Channel[],
   togglePinChannel: (ch: Channel) => void,
-  isTopBarVisible?: boolean
+  isTopBarVisible?: boolean,
+  useNewDesign?: boolean,
+  setUseNewDesign?: (val: boolean) => void
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -3740,6 +3754,30 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
               </div>
             </div>
 
+            {/* Mobile Use new design Toggle Switch */}
+            <div className={`flex md:hidden items-center justify-between p-3.5 rounded-xl border z-20 ${
+              isDark 
+                ? "bg-white/5 border-white/5 text-white" 
+                : "bg-white border-slate-200 text-slate-600 shadow-sm"
+            } ${liquidGlass ? "backdrop-blur-md" : ""}`}>
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-300">Use new design</span>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={useNewDesign}
+                onClick={() => setUseNewDesign(!useNewDesign)}
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                  useNewDesign ? 'bg-[#4AC4FE]' : isDark ? 'bg-slate-740' : 'bg-slate-300'
+                }`}
+              >
+                <span
+                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
+                    useNewDesign ? 'translate-x-5' : 'translate-x-0'
+                  }`}
+                />
+              </button>
+            </div>
+
             <div className="hidden md:flex gap-2">
               {/* Desktop Sort Button */}
               <button
@@ -3760,6 +3798,30 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
                   {sortOrder === "default" ? "Mặc định" : sortOrder === "az" ? "A-Z" : "Z-A"}
                 </span>
               </button>
+
+              {/* Use new design Toggle Switch */}
+              <div className={`p-3.5 md:p-3 rounded-xl border transition-all flex items-center justify-between gap-3 ${
+                isDark 
+                  ? "bg-slate-800/50 border-slate-700/50 text-white" 
+                  : "bg-white/50 border-white/60 text-slate-900"
+              } ${liquidGlass ? "backdrop-blur-md" : ""}`}>
+                <span className="text-xs font-bold whitespace-nowrap">Use new design</span>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={useNewDesign}
+                  onClick={() => setUseNewDesign(!useNewDesign)}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                    useNewDesign ? 'bg-[#4AC4FE]' : isDark ? 'bg-slate-700' : 'bg-slate-300'
+                  }`}
+                >
+                  <span
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out ${
+                      useNewDesign ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -3857,6 +3919,7 @@ function TVContent({ key, mode = "live", active, setActive, isDark, favorites, t
                             liquidGlass={liquidGlass}
                             isLiveTab={true}
                             onContextMenu={onChannelContextMenu}
+                            useNewDesign={useNewDesign}
                           />
                         ))
                       )}
@@ -10965,6 +11028,13 @@ const [sidebarWidth, setSidebarWidth] = useState(() => {
     localStorage.setItem("vplay_pinning", isPinningEnabled.toString());
   }, [isPinningEnabled]);
   const [activeChannel, setActiveChannel] = useState(channels[0]);
+  const [useNewDesign, setUseNewDesign] = useState<boolean>(() => {
+    return localStorage.getItem("vplay_use_new_design") === "true";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("vplay_use_new_design", useNewDesign.toString());
+  }, [useNewDesign]);
   const [isPlayerInView, setIsPlayerInView] = useState(true);
   const [pipExplicitlyClosed, setPipExplicitlyClosed] = useState(false);
   const [sortOrder, setSortOrder] = useState<"default" | "az" | "za">("default");
@@ -12461,6 +12531,7 @@ const [headingBar, setHeadingBar] = useState(() => {
                   slides={slides}
                   bypassed={bypassed}
                   onChannelContextMenu={onChannelContextMenu}
+                  useNewDesign={useNewDesign}
                 />
               )}
               {displayTab === "Tìm kiếm" && (
@@ -12525,6 +12596,8 @@ const [headingBar, setHeadingBar] = useState(() => {
                   pinnedChannels={pinnedChannels}
                   togglePinChannel={togglePinChannel}
                   isTopBarVisible={isTopBarVisible}
+                  useNewDesign={useNewDesign}
+                  setUseNewDesign={setUseNewDesign}
                 />
               )}
               {displayTab === "Package" && (
@@ -12552,6 +12625,8 @@ const [headingBar, setHeadingBar] = useState(() => {
                   pinnedChannels={pinnedChannels}
                   togglePinChannel={togglePinChannel}
                   isTopBarVisible={isTopBarVisible}
+                  useNewDesign={useNewDesign}
+                  setUseNewDesign={setUseNewDesign}
                 />
               )}
               {displayTab === "Experiments" && (
